@@ -1,0 +1,8 @@
+{
+  "name": "AppAdopciones",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "pae-adopciones"
+}
