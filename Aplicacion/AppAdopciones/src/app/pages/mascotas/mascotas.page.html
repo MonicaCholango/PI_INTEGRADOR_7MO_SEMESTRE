@@ -1,0 +1,131 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="filtros-section ion-padding">
+    <ion-searchbar
+      [(ngModel)]="filtroTexto"
+      (ionInput)="filtrarMascotas()"
+      placeholder="Buscar por nombre o ciudad">
+    </ion-searchbar>
+
+    <ion-select
+      [(ngModel)]="filtroTipo"
+      (ionChange)="filtrarMascotas()"
+      placeholder="Filtrar por tipo"
+      interface="popover">
+      <ion-select-option value="">Todos los tipos</ion-select-option>
+      <ion-select-option *ngFor="let tipo of tiposMascota" [value]="tipo.nombre">
+        {{ tipo.nombre }}
+      </ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="cargando" class="loading-container ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando mascotas...</p>
+  </div>
+
+  <!-- TARJETAS COMPACTAS DE MASCOTAS -->
+  <div *ngIf="!cargando" class="mascotas-grid ion-padding">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let mascota of mascotasFiltradas">
+          <ion-card class="mascota-card-compact">
+            <div class="mascota-image-container">
+              <img
+                [src]="mascota.foto | photo"
+                [alt]="mascota.nombre"
+                class="mascota-image-compact"
+                (error)="onImageError($event)">
+
+              <!-- Badge de estado -->
+              <div class="estado-badge" [class]="'estado-' + (mascota.estado || '').toLowerCase().replace(' ', '-')">
+                {{ mascota.estado }}
+              </div>
+            </div>
+
+            <div class="mascota-info-compact">
+              <h3 class="mascota-nombre">{{ mascota.nombre }}</h3>
+
+              <div class="mascota-detalles-basicos">
+                <ion-chip color="primary" size="small">
+                  <ion-icon name="paw"></ion-icon>
+                  <ion-label>{{ mascota.tipoMascota }}</ion-label>
+                </ion-chip>
+
+                <ion-chip color="secondary" size="small">
+                  <ion-icon name="time"></ion-icon>
+                  <ion-label>{{ mascota.edad }}</ion-label>
+                </ion-chip>
+              </div>
+
+              <div class="mascota-ubicacion-basica">
+                <p>
+                  <ion-icon name="location"></ion-icon>
+                  {{ mascota.ciudad }}
+                </p>
+              </div>
+
+              <div class="action-buttons">
+                <ion-button
+                  size="small"
+                  fill="outline"
+                  expand="block"
+                  (click)="mostrarDetallesMascota(mascota)"
+                  class="info-button">
+                  <ion-icon name="information-circle" slot="start"></ion-icon>
+                  Ver Detalles
+                </ion-button>
+
+                <ion-button
+                  size="small"
+                  expand="block"
+                  (click)="solicitarAdopcion(mascota)"
+                  [disabled]="mascota.estado !== 'Disponible'"
+                  class="adopt-button">
+                  <ion-icon name="heart" slot="start"></ion-icon>
+                  {{ mascota.estado === 'Disponible' ? 'Adoptar' : 'No Disponible' }}
+                </ion-button>
+              </div>
+            </div>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div *ngIf="!cargando && mascotasFiltradas.length === 0" class="no-mascotas ion-padding ion-text-center">
+    <ion-icon name="paw" size="large" color="medium"></ion-icon>
+    <h2>No hay mascotas disponibles</h2>
+    <p *ngIf="filtroTipo || filtroTexto">
+      Intenta cambiar los filtros para ver más opciones
+    </p>
+    <p *ngIf="!filtroTipo && !filtroTexto">
+      Vuelve más tarde, pronto tendremos nuevas mascotas
+    </p>
+
+    <ion-button
+      *ngIf="filtroTipo || filtroTexto"
+      (click)="filtroTipo = ''; filtroTexto = ''; filtrarMascotas()"
+      fill="outline">
+      <ion-icon name="refresh" slot="start"></ion-icon>
+      Limpiar Filtros
+    </ion-button>
+  </div>
+
+  <div *ngIf="!cargando && mascotasFiltradas.length > 0" class="info-footer ion-padding">
+    <ion-card>
+      <ion-card-content class="ion-text-center">
+        <p>
+          <ion-icon name="information-circle" color="primary"></ion-icon>
+          Mostrando {{ mascotasFiltradas.length }} de {{ mascotas.length }} mascotas
+        </p>
+        <p class="small-text">
+          Toca "Ver Detalles" para más información sobre cada mascota
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

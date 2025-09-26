@@ -1,0 +1,168 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Vista Admin -->
+  <div *ngIf="usuario?.tipoUsuario === 'admin'" class="admin-eventos-view">
+    
+    <div class="section-header ion-padding">
+      <div class="header-content">
+        <h1>
+          <ion-icon name="calendar" color="primary"></ion-icon>
+          Gestión de Eventos
+        </h1>
+        <p>Administra los eventos, noticias y campañas de PAE</p>
+      </div>
+      <ion-button (click)="abrirModalEvento(false, null)" fill="solid">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Nuevo Evento
+      </ion-button>
+    </div>
+
+    <!-- Filtros Admin -->
+    <div class="filters-section ion-padding-horizontal">
+      <ion-segment [(ngModel)]="filtroTipo" (ionChange)="filtrarEventos()">
+        <ion-segment-button value="todos">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="vigentes">
+          <ion-label>Vigentes</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="programados">
+          <ion-label>Programados</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="vencidos">
+          <ion-label>Finalizados</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Lista Admin - Grid de Tarjetas Resumidas -->
+    <div class="eventos-admin-grid eventos-grid">
+      <app-evento-card
+        *ngFor="let evento of eventosFiltrados; trackBy: trackByEventoId"
+        [evento]="evento"
+        [showEditButton]="true"
+        [showDeleteButton]="true"
+        [showRegisterButton]="false"
+        (onEdit)="editarEvento(evento)"
+        (onDelete)="eliminarEvento(evento)"
+        (onViewDetails)="verDetallesEvento(evento)">
+      </app-evento-card>
+
+      <app-empty-state
+        *ngIf="eventosFiltrados.length === 0 && !cargando"
+        icon="calendar"
+        title="No hay eventos"
+        [subtitle]="getEmptyMessage()"
+        actionText="Crear Primer Evento"
+        (onAction)="abrirModalEvento(false, null)">
+      </app-empty-state>
+    </div>
+
+  </div>
+
+  <!-- Vista Adoptante/Usuario -->
+  <div *ngIf="usuario?.tipoUsuario === 'adoptante' || !usuario" class="adoptante-eventos-view">
+    
+    <div class="hero-section ion-padding">
+      <div class="hero-content">
+        <h1>
+          <ion-icon name="calendar" color="primary"></ion-icon>
+          Eventos y Noticias
+        </h1>
+        <p>Mantente informado sobre nuestras actividades, campañas y eventos</p>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section ion-padding-horizontal">
+      <ion-segment [(ngModel)]="filtroTipoAdoptante" (ionChange)="filtrarEventosAdoptante()">
+        <ion-segment-button value="todos">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Evento">
+          <ion-label>Eventos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Campaña">
+          <ion-label>Campañas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Noticia">
+          <ion-label>Noticias</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Adopción">
+          <ion-label>Adopciones</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Eventos Destacados -->
+    <div class="destacados-section" *ngIf="eventosDestacados.length > 0">
+      <div class="section-title ion-padding-horizontal">
+        <h2>
+          <ion-icon name="star" color="warning"></ion-icon>
+          Eventos Destacados
+        </h2>
+      </div>
+      
+      <swiper-container 
+        class="destacados-slider"
+        [slides-per-view]="'auto'"
+        [space-between]="16"
+        [centered-slides]="false"
+        [pagination]="true">
+        
+        <swiper-slide *ngFor="let evento of eventosDestacados">
+          <app-evento-card
+            [evento]="evento"
+            [showRegisterButton]="true"
+            [showEditButton]="false"
+            [showDeleteButton]="false"
+            (onRegister)="inscribirseEvento(evento)"
+            (onViewDetails)="verDetallesEvento(evento)">
+          </app-evento-card>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
+    <!-- Lista de Eventos - Grid de Tarjetas Resumidas -->
+    <div class="eventos-list">
+      <div class="section-title ion-padding-horizontal" *ngIf="eventosVigentesAdoptante.length > 0">
+        <h2>
+          <ion-icon name="calendar-outline" color="primary"></ion-icon>
+          {{ getTituloSeccion() }}
+        </h2>
+      </div>
+
+      <div class="eventos-grid">
+        <app-evento-card
+          *ngFor="let evento of eventosVigentesAdoptante; trackBy: trackByEventoId"
+          [evento]="evento"
+          [showRegisterButton]="true"
+          [showEditButton]="false"
+          [showDeleteButton]="false"
+          [compact]="false"
+          (onRegister)="inscribirseEvento(evento)"
+          (onViewDetails)="verDetallesEvento(evento)">
+        </app-evento-card>
+
+        <app-empty-state
+          *ngIf="eventosVigentesAdoptante.length === 0 && !cargando"
+          icon="calendar-outline"
+          title="No hay eventos disponibles"
+          subtitle="Pronto publicaremos nuevas actividades y eventos">
+        </app-empty-state>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loading -->
+  <app-loading-spinner 
+    *ngIf="cargando" 
+    message="Cargando eventos..."
+    [centered]="true">
+  </app-loading-spinner>
+
+</ion-content>

@@ -1,0 +1,40 @@
+<div [class]="containerClasses">
+  <div class="empty-state-content">
+    <div class="empty-image" *ngIf="showImage && imageUrl">
+      <img [src]="imageUrl" [alt]="title" />
+    </div>
+
+    <div class="empty-icon" *ngIf="!showImage || !imageUrl">
+      <ion-icon
+        [name]="icon"
+        [color]="iconColor"
+        [style.font-size]="iconSize">
+      </ion-icon>
+    </div>
+
+    <div class="empty-text">
+      <h2 class="empty-title">{{ title }}</h2>
+      <p class="empty-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+    </div>
+
+    <div class="empty-actions" *ngIf="actionText || secondaryActionText">
+      <ion-button
+        *ngIf="actionText"
+        expand="block"
+        (click)="handleAction()"
+        class="primary-action">
+        <ion-icon name="add" slot="start"></ion-icon>
+        {{ actionText }}
+      </ion-button>
+
+      <ion-button
+        *ngIf="secondaryActionText"
+        expand="block"
+        fill="outline"
+        (click)="handleSecondaryAction()"
+        class="secondary-action">
+        {{ secondaryActionText }}
+      </ion-button>
+    </div>
+  </div>
+</div>

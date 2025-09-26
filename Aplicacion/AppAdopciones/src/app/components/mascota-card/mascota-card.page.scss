@@ -1,0 +1,459 @@
+
+.mascota-card {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  background: var(--gradient-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+
+  &:hover:not(.mascota-card-disabled) {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-strong);
+    border-color: var(--ion-color-primary);
+
+    .mascota-image {
+      transform: scale(1.05);
+    }
+  }
+
+  &.mascota-card-compact {
+    margin-bottom: 0.75rem;
+
+    .mascota-image {
+      height: 180px;
+    }
+
+    .mascota-info {
+      padding: 1rem;
+    }
+
+    .mascota-actions {
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  &.mascota-card-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: var(--shadow-card);
+    }
+  }
+}
+
+.mascota-image-container {
+  position: relative;
+  overflow: hidden;
+  background: var(--ion-color-light);
+
+  .mascota-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    border-radius: 0;
+
+    &.mascota-image-compact {
+      height: 180px;
+    }
+  }
+
+  .estado-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-small);
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(10px);
+
+    ion-icon {
+      font-size: 0.875rem;
+    }
+
+    &.estado-disponible {
+      background: rgba(45, 211, 111, 0.9);
+    }
+
+    &.estado-adoptado {
+      background: rgba(108, 194, 74, 0.9);
+    }
+
+    &.estado-en-veterinaria {
+      background: rgba(255, 196, 9, 0.9);
+    }
+
+    &.estado-enfermo {
+      background: rgba(235, 68, 90, 0.9);
+    }
+  }
+
+  .genero-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+.mascota-info {
+  padding: 1.5rem;
+
+  &.mascota-info-compact {
+    padding: 1rem;
+  }
+
+  .mascota-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+
+    .mascota-nombre {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-primary);
+      margin: 0;
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+
+    .estado-chip {
+      flex-shrink: 0;
+    }
+  }
+
+  .mascota-detalles-basicos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .detalle-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+      color: var(--ion-color-dark);
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .mascota-ubicacion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .detalle-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+
+      ion-icon {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .mascota-ubicacion-compacta {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+    margin-top: 0.5rem;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+  }
+
+  .mascota-salud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .mascota-personalidad {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    ion-chip {
+      font-size: 0.75rem;
+      --background: rgba(var(--ion-color-light-rgb), 0.8);
+      --color: var(--ion-color-dark);
+    }
+  }
+
+  .mascota-descripcion {
+    margin-bottom: 1rem;
+    
+    p {
+      margin: 0;
+      line-height: 1.5;
+      color: var(--ion-color-medium);
+      font-size: 0.9rem;
+    }
+  }
+
+  .mascota-fechas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .fecha-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      ion-icon {
+        font-size: 0.8rem;
+      }
+
+      small {
+        font-size: 0.75rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+.mascota-actions {
+  padding: 1rem 1.5rem;
+  background: rgba(var(--ion-color-light-rgb), 0.3);
+  border-top: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+
+  .action-button {
+    flex: 1;
+    min-width: 120px;
+    font-weight: 600;
+    --border-radius: var(--border-radius-medium);
+
+    &.details-button {
+      --color: var(--ion-color-medium);
+      
+      &:hover {
+        --color: var(--ion-color-primary);
+      }
+    }
+
+    &.adopt-button {
+      --background: var(--gradient-primary);
+      --color: white;
+      box-shadow: var(--shadow-soft);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-medium);
+      }
+    }
+
+    &.disabled-button {
+      --color: var(--ion-color-medium);
+      opacity: 0.6;
+    }
+
+    &.edit-button {
+      --border-color: var(--ion-color-primary);
+      --color: var(--ion-color-primary);
+
+      &:hover {
+        --background: var(--ion-color-primary);
+        --color: white;
+      }
+    }
+
+    &.delete-button {
+      --border-color: var(--ion-color-danger);
+      --color: var(--ion-color-danger);
+
+      &:hover {
+        --background: var(--ion-color-danger);
+        --color: white;
+      }
+    }
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
+
+    .action-button {
+      flex: 1;
+      min-width: auto;
+    }
+  }
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  ion-spinner {
+    --color: var(--ion-color-primary);
+  }
+}
+
+@media (max-width: 768px) {
+  .mascota-card {
+    .mascota-info {
+      .mascota-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+
+        .estado-chip {
+          align-self: flex-end;
+        }
+      }
+
+      .mascota-detalles-basicos {
+        justify-content: center;
+      }
+    }
+
+    .mascota-actions {
+      .action-button {
+        min-width: auto;
+        flex: 1;
+      }
+
+      .admin-actions {
+        flex-direction: column;
+
+        .action-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .mascota-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    .mascota-actions {
+      background: rgba(255, 255, 255, 0.1);
+      border-top-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mascota-card {
+  animation: slideInUp 0.4s ease-out;
+}
+
+.mascota-card {
+  &.featured {
+    border: 2px solid var(--ion-color-primary);
+    box-shadow: var(--shadow-strong);
+
+    &::before {
+      content: '⭐ Destacado';
+      position: absolute;
+      top: -1px;
+      right: 12px;
+      background: var(--ion-color-primary);
+      color: white;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 0 0 8px 8px;
+      z-index: 10;
+    }
+  }
+
+  &.urgent {
+    border: 2px solid var(--ion-color-warning);
+
+    &::before {
+      content: '⚡ Urgente';
+      position: absolute;
+      top: -1px;
+      right: 12px;
+      background: var(--ion-color-warning);
+      color: var(--ion-color-warning-contrast);
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 0 0 8px 8px;
+      z-index: 10;
+    }
+  }
+
+  &.new {
+    &::after {
+      content: 'Nuevo';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--ion-color-success);
+      color: white;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: var(--border-radius-small);
+      z-index: 5;
+    }
+  }
+}

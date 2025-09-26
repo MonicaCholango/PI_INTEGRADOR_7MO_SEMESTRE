@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{this.editar? 'Editar': 'Nuevo'}} Empleado</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item><ion-input label="Nombres" [(ngModel)]="empleado.nombres" required></ion-input></ion-item>
+    <ion-item><ion-input label="Apellidos" [(ngModel)]="empleado.apellidos" required></ion-input></ion-item>
+    <ion-item><ion-input label="Cédula" [(ngModel)]="empleado.cedula" required></ion-input></ion-item>
+    <ion-item><ion-input label="Correo" [(ngModel)]="empleado.correo"></ion-input></ion-item>
+    <ion-item><ion-input label="Teléfono" [(ngModel)]="empleado.telefono"></ion-input></ion-item>
+    <ion-item><ion-input label="Celular" [(ngModel)]="empleado.celular"></ion-input></ion-item>
+    <ion-item><ion-input label="Fecha Nacimiento" type="date" [(ngModel)]="empleado.fecha_nacimiento"></ion-input></ion-item>
+    <ion-item>
+      <ion-select label="Centro" [(ngModel)]="empleado.centro_id">
+        <ion-select-option *ngFor="let c of centros" [value]="c.id">{{ c.nombre }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-select label="Ciudad" [(ngModel)]="empleado.ciudad_id">
+        <ion-select-option *ngFor="let c of ciudades" [value]="c.id">{{ c.nombre }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item><ion-input label="Área" [(ngModel)]="empleado.area"></ion-input></ion-item>
+  </ion-list>
+
+  <ion-button expand="full" (click)="guardar()">Guardar</ion-button>
+</ion-content>

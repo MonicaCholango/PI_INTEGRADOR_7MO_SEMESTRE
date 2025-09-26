@@ -1,0 +1,285 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" *ngIf="usuario">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>{{ titulo }}</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="irAPerfil()" *ngIf="usuario">
+        <ion-icon name="person-circle"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="cerrarSesion()" *ngIf="usuario">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="irAlogin()" *ngIf="!usuario">
+        <ion-icon name="log-in"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-menu side="start" menuId="admin-menu" contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>
+        <ion-icon name="shield-checkmark"></ion-icon>
+        PAE Admin
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="menu-content-organized">
+    <!-- PERFIL DEL ADMIN -->
+    <div class="admin-profile" *ngIf="usuario">
+      <div class="admin-avatar">
+        <ion-icon name="person-circle" color="light"></ion-icon>
+      </div>
+      <h3>{{ usuario.nombres }}</h3>
+      <ng-template [ngIf]="usuario.tipoUsuario === 'admin'">
+        <p>Administrador</p>
+      </ng-template>
+      <ng-template [ngIf]="usuario.tipoUsuario !== 'admin'">
+        <p>Adoptante</p>
+      </ng-template>
+    </div>
+
+    <!-- MENÚ PARA ADMINISTRADORES -->
+    <div *ngIf="usuario?.tipoUsuario === 'admin'" class="organized-menu">
+
+      <!-- SECCIÓN DE ALERTAS URGENTES (Siempre visible) -->
+      <div class="priority-section" *ngIf="getSolicitudesPendientes() > 0 || getDenunciasPendientes() > 0">
+        <ion-item-divider class="priority-header">
+          <ion-icon name="warning" color="warning"></ion-icon>
+          <ion-label color="warning">Atención Urgente</ion-label>
+        </ion-item-divider>
+
+        <ion-item button (click)="navegarA('solicitudes'); closeMenu()" 
+                  class="priority-item" *ngIf="getSolicitudesPendientes() > 0">
+          <ion-icon name="document-text" slot="start" color="warning"></ion-icon>
+          <ion-label>
+            <h3>Solicitudes Pendientes</h3>
+            <p>Requieren revisión urgente</p>
+          </ion-label>
+          <ion-badge slot="end" color="warning">{{ getSolicitudesPendientes() }}</ion-badge>
+        </ion-item>
+
+        <ion-item button (click)="navegarDirect('denuncias-admin'); closeMenu()" 
+                  class="priority-item" *ngIf="getDenunciasPendientes() > 0">
+          <ion-icon name="shield-half" slot="start" color="danger"></ion-icon>
+          <ion-label>
+            <h3>Denuncias Activas</h3>
+            <p>Necesitan atención inmediata</p>
+          </ion-label>
+          <ion-badge slot="end" color="danger">{{ getDenunciasPendientes() }}</ion-badge>
+        </ion-item>
+      </div>
+
+      <!-- SECCIÓN GESTIÓN PRINCIPAL (Colapsable) -->
+      <div class="collapsible-section">
+        <ion-item-divider class="section-toggle" (click)="toggleSection('gestion')">
+          <ion-label color="primary">Gestión Principal</ion-label>
+          <ion-icon name="chevron-down" 
+                    [class.rotated]="!secciones.gestion" 
+                    color="primary" 
+                    slot="end"></ion-icon>
+        </ion-item-divider>
+
+        <div class="section-content" [class.collapsed]="!secciones.gestion">
+          <ion-item button (click)="navegarA('dashboard'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'dashboard'"
+                    class="enhanced-menu-item">
+            <ion-icon name="analytics" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Panel General</h3>
+              <p>Vista general del sistema</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item button (click)="navegarA('mascotas'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'mascotas'"
+                    class="enhanced-menu-item">
+            <ion-icon name="paw" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Mascotas</h3>
+              <p>Gestionar mascotas registradas</p>
+            </ion-label>
+            <ion-badge slot="end" color="tertiary">{{ getTotalMascotas() }}</ion-badge>
+          </ion-item>
+
+          <ion-item button (click)="navegarA('usuarios'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'usuarios'"
+                    class="enhanced-menu-item">
+            <ion-icon name="people" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Usuarios</h3>
+              <p>Administrar usuarios del sistema</p>
+            </ion-label>
+            <ion-badge slot="end" color="secondary">{{ getTotalUsuarios() }}</ion-badge>
+          </ion-item>
+
+          <ion-item button (click)="navegarA('solicitudes'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'solicitudes'"
+                    class="enhanced-menu-item">
+            <ion-icon name="document-text" slot="start" color="warning"></ion-icon>
+            <ion-label>
+              <h3>Solicitudes de Adopción</h3>
+              <p>Revisar y aprobar solicitudes</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="getSolicitudesPendientes() > 0 ? 'warning' : 'medium'">
+              {{ getTotalSolicitudes() }}
+            </ion-badge>
+          </ion-item>
+
+          <ion-item button (click)="navegarDirect('denuncias-admin'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'denuncias-admin'"
+                    class="enhanced-menu-item">
+            <ion-icon name="shield-half" slot="start" color="danger"></ion-icon>
+            <ion-label>
+              <h3>Denuncias</h3>
+              <p>Gestionar denuncias</p>
+            </ion-label>
+            <ion-badge slot="end" color="danger">{{ getDenunciasPendientes() }}</ion-badge>
+          </ion-item>
+        </div>
+      </div>
+
+      
+    <!-- Y en la sección de gestión principal para admins, después del item de "Denuncias" -->
+    <ion-item button (click)="navegarDirect('eventos'); closeMenu()"
+              [class.menu-active]="vistaActual === 'eventos'"
+              class="enhanced-menu-item">
+      <ion-icon name="calendar" slot="start" color="success"></ion-icon>
+      <ion-label>
+        <h3>Eventos</h3>
+        <p>Gestionar eventos y noticias</p>
+      </ion-label>
+    </ion-item>
+
+      <!-- SECCIÓN CONFIGURACIÓN DEL SISTEMA (Colapsable) -->
+      <div class="collapsible-section">
+        <ion-item-divider class="section-toggle" (click)="toggleSection('configuracion')">
+          <ion-label color="success">Configuración</ion-label>
+          <ion-icon name="chevron-down" 
+                    [class.rotated]="!secciones.configuracion" 
+                    color="success" 
+                    slot="end"></ion-icon>
+        </ion-item-divider>
+
+        <div class="section-content" [class.collapsed]="!secciones.configuracion">
+          <ion-item button (click)="navegarA('centros'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'centros'"
+                    class="enhanced-menu-item config-item">
+            <ion-icon name="business" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>Centros de Adopción</h3>
+              <p>Configurar ubicaciones</p>
+            </ion-label>
+            <ion-badge slot="end" color="light">{{ data.centros.length }}</ion-badge>
+          </ion-item>
+
+          <ion-item button (click)="navegarA('tipos'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'tipos'"
+                    class="enhanced-menu-item config-item">
+            <ion-icon name="medical" slot="start" color="medium"></ion-icon>
+            <ion-label>
+              <h3>Tipos de Mascota</h3>
+              <p>Categorías disponibles</p>
+            </ion-label>
+            <ion-badge slot="end" color="light">{{ data.tiposMascota.length }}</ion-badge>
+          </ion-item>
+
+          <ion-item button (click)="navegarA('ciudades'); closeMenu()"
+                    [class.menu-active]="vistaActual === 'ciudades'"
+                    class="enhanced-menu-item config-item">
+            <ion-icon name="location" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Ciudades</h3>
+              <p>Ubicaciones geográficas</p>
+            </ion-label>
+            <ion-badge slot="end" color="light">{{ data.ciudades.length }}</ion-badge>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- SECCIÓN NAVEGACIÓN (Colapsable, inicialmente cerrada) -->
+      <div class="collapsible-section">
+        <ion-item-divider class="section-toggle" (click)="toggleSection('navegacion')">
+          <ion-label color="medium">Navegación</ion-label>
+          <ion-icon name="chevron-down" 
+                    [class.rotated]="!secciones.navegacion" 
+                    color="medium" 
+                    slot="end"></ion-icon>
+        </ion-item-divider>
+
+        <div class="section-content" [class.collapsed]="!secciones.navegacion">
+          <ion-item button routerLink="/home" (click)="closeMenu()" class="enhanced-menu-item nav-item">
+            <ion-icon name="home" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Ir al Inicio</h3>
+              <p>Página principal</p>
+            </ion-label>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENÚ PARA ADOPTANTES -->
+    <div *ngIf="usuario?.tipoUsuario === 'adoptante'" class="organized-menu">
+      <ion-item-divider>
+        <ion-label color="tertiary">Adopción</ion-label>
+      </ion-item-divider>
+
+      <ion-item button routerLink="/mascotas" (click)="closeMenu()" class="enhanced-menu-item">
+        <ion-icon name="paw" slot="start" color="tertiary"></ion-icon>
+        <ion-label>
+          <h3>Explorar Mascotas</h3>
+          <p>Encuentra tu compañero ideal</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item button routerLink="/solicitudes" (click)="closeMenu()" class="enhanced-menu-item">
+        <ion-icon name="document-text" slot="start" color="warning"></ion-icon>
+        <ion-label>
+          <h3>Mis Solicitudes</h3>
+          <p>Estado de tus solicitudes</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item button routerLink="/denuncias" (click)="closeMenu()" class="enhanced-menu-item">
+        <ion-icon name="shield-half" slot="start" color="danger"></ion-icon>
+        <ion-label>
+          <h3>Reportar Denuncia</h3>
+          <p>Ayuda a proteger animales</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
+      <!-- eventos -->
+  <ion-item button routerLink="/eventos" (click)="closeMenu()" class="enhanced-menu-item">
+    <ion-icon name="calendar" slot="start" color="tertiary"></ion-icon>
+    <ion-label>
+      <h3>Eventos y Noticias</h3>
+      <p>Mantente informado</p>
+    </ion-label>
+  </ion-item>
+
+    <!-- PIE DEL MENÚ (Siempre visible) -->
+    <div class="menu-footer-organized">
+      <ion-item button (click)="cerrarSesion(); closeMenu()" class="logout-item">
+        <ion-icon name="log-out" slot="start" color="danger"></ion-icon>
+        <ion-label color="danger">
+          <h3>Cerrar Sesión</h3>
+          <p>Salir del sistema</p>
+        </ion-label>
+      </ion-item>
+    </div>
+  </ion-content>
+</ion-menu>
+
+<ion-content id="main-content">
+  <router-outlet></router-outlet>
+</ion-content>

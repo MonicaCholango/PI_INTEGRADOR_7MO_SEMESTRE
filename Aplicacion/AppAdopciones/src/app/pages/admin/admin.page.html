@@ -1,0 +1,654 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="vistaActual === 'dashboard'" class="dashboard-view">
+    <div class="welcome-header ion-padding">
+      <h1>Bienvenido {{ usuario?.nombres }}</h1>
+      <p>Panel de administración de PAE Adopciones</p>
+    </div>
+
+    <div class="stats-overview ion-padding">
+      <h2>Resumen General</h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" size-md="3">
+            <div class="stat-card usuarios-card" (click)="navegarA('usuarios')">
+              <div class="stat-icon">
+                <ion-icon name="people" color="primary"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h3>{{ getTotalUsuarios() }}</h3>
+                <p>Usuarios</p>
+                <small>{{ getUsuariosActivos() }} activos</small>
+              </div>
+            </div>
+          </ion-col>
+
+          <ion-col size="6" size-md="3">
+            <div class="stat-card mascotas-card" (click)="navegarA('mascotas')">
+              <div class="stat-icon">
+                <ion-icon name="paw" color="secondary"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h3>{{ getTotalMascotas() }}</h3>
+                <p>Mascotas</p>
+                <small>{{ getMascotasDisponibles() }} disponibles</small>
+              </div>
+            </div>
+          </ion-col>
+
+          <ion-col size="6" size-md="3">
+            <div class="stat-card solicitudes-card" (click)="navegarA('solicitudes')">
+              <div class="stat-icon">
+                <ion-icon name="document-text" color="warning"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h3>{{ getTotalSolicitudes() }}</h3>
+                <p>Solicitudes</p>
+                <small>{{ getSolicitudesPendientes() }} pendientes</small>
+              </div>
+            </div>
+          </ion-col>
+
+          <ion-col size="6" size-md="3">
+            <div class="stat-card adopciones-card">
+              <div class="stat-icon">
+                <ion-icon name="heart" color="success"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h3>{{ getAdopcionesAprobadas() }}</h3>
+                <p>Adopciones</p>
+                <small>Aprobadas</small>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <div class="recent-activity ion-padding">
+      <h2>Actividad Reciente</h2>
+      <ion-card>
+        <ion-card-content>
+          <div class="activity-item" *ngFor="let solicitud of solicitudesRecientes">
+            <div class="activity-icon">
+              <ion-icon name="document-text" [color]="getEstadoColor(solicitud.estado)"></ion-icon>
+            </div>
+            <div class="activity-content">
+              <h4>{{ solicitud.nombres }} {{ solicitud.apellidos }}</h4>
+              <p>Solicitud para {{ solicitud.mascota_nombre }}</p>
+              <small>{{ formatearFecha(solicitud.fecha_solicitud) }}</small>
+            </div>
+            <div class="activity-status">
+              <ion-chip [color]="getEstadoColor(solicitud.estado)" size="small">
+                {{ solicitud.estado }}
+              </ion-chip>
+            </div>
+          </div>
+
+          <div *ngIf="solicitudesRecientes.length === 0" class="no-activity">
+            <ion-icon name="time" color="medium"></ion-icon>
+            <p>No hay actividad reciente</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="quick-actions ion-padding">
+      <h2>Acciones Rápidas</h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" size-md="3">
+            <ion-button expand="block" fill="outline" (click)="abrirModalMascota(false, null)">
+              <ion-icon name="add" slot="start"></ion-icon>
+              Nueva Mascota
+            </ion-button>
+          </ion-col>
+          <ion-col size="6" size-md="3">
+            <ion-button expand="block" fill="outline" (click)="navegarA('solicitudes')">
+              <ion-icon name="eye" slot="start"></ion-icon>
+              Ver Solicitudes
+            </ion-button>
+          </ion-col>
+          <ion-col size="6" size-md="3">
+            <ion-button expand="block" fill="outline" (click)="agregarCentro()">
+              <ion-icon name="business" slot="start"></ion-icon>
+              Nuevo Centro
+            </ion-button>
+          </ion-col>
+          <ion-col size="6" size-md="3">
+            <ion-button expand="block" fill="outline" (click)="agregarCiudad()">
+              <ion-icon name="document" slot="start"></ion-icon>
+              Nueva Ciudad
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'usuarios'" class="usuarios-view ion-padding">
+    <div class="section-header">
+      <h2>Gestión de Usuarios</h2>
+      <p>Total: {{ usuarios.length }} usuarios ({{ getUsuariosActivos() }} activos)</p>
+      <ion-button (click)="abrirModalEmpleado(false, null)">Crear Empleado</ion-button>
+    </div>
+
+    <ion-card *ngFor="let usuario of usuarios" class="user-card-admin">
+      <ion-card-content>
+        <div class="user-info-grid">
+          <div class="user-avatar">
+            <ion-icon name="person-circle"
+                      [color]="usuario.tipoUsuario === 'admin' ? 'tertiary' : 'primary'"
+                      size="large"></ion-icon>
+          </div>
+
+          <div class="user-details">
+            <h3>{{ usuario.nombres }} {{ usuario.apellidos }}</h3>
+            <p>
+              <ion-icon name="card"></ion-icon>
+              {{ usuario.cedula }}
+            </p>
+            <p>
+              <ion-icon name="mail"></ion-icon>
+              {{ usuario.correo }}
+            </p>
+            <p>
+              <ion-icon name="call"></ion-icon>
+              {{ usuario.celular }}
+            </p>
+            <p>
+              <ion-icon name="location"></ion-icon>
+              {{ usuario.ciudad }}
+            </p>
+          </div>
+
+          <div class="user-status">
+            <ion-chip [color]="getEstadoColor(usuario.tipoUsuario)" size="small">
+              <ion-label>{{ usuario.tipoUsuario === 'admin' ? 'Admin' : 'Adoptante' }}</ion-label>
+            </ion-chip>
+            <ion-chip [color]="getEstadoColor(usuario.estado)" size="small">
+              <ion-label>{{ usuario.estado }}</ion-label>
+            </ion-chip>
+          </div>
+
+          <div class="user-actions">
+            <ion-button size="small" fill="outline" (click)="editarUsuario(usuario)">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button size="small"
+                        [color]="usuario.estado === 'activo' ? 'danger' : 'success'"
+                        fill="outline"
+                        (click)="cambiarEstadoUsuario(usuario)">
+              <ion-icon [name]="usuario.estado === 'activo' ? 'pause' : 'play'" slot="start"></ion-icon>
+              {{ usuario.estado === 'activo' ? 'Desactivar' : 'Activar' }}
+            </ion-button>
+            <ion-button size="small" color="danger" fill="outline" (click)="eliminarUsuario(usuario)">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="usuarios.length === 0" class="no-data-message">
+      <div class="no-data-content">
+        <ion-icon name="people" color="medium"></ion-icon>
+        <h2>No hay usuarios registrados</h2>
+        <p>Los usuarios se registran desde la aplicación</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'mascotas'" class="mascotas-view ion-padding">
+    <div class="section-header">
+      <h2>Gestión de Mascotas</h2>
+      <p>Total: {{ mascotas.length }} mascotas ({{ getMascotasDisponibles() }} disponibles)</p>
+      <ion-button (click)="abrirModalMascota(false,null)" fill="outline">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar Mascota
+      </ion-button>
+    </div>
+
+    <ion-card *ngFor="let mascota of mascotas" class="pet-card-admin">
+      <ion-card-content>
+        <div class="pet-info-grid">
+          <div class="pet-image">
+            <img [src]="mascota.foto  | photo"
+                 [alt]="mascota.nombre"
+                 (error)="onImageError($event)">
+          </div>
+
+          <div class="pet-details">
+            <h3>{{ mascota.nombre }}</h3>
+            <p>
+              <ion-icon name="paw"></ion-icon>
+              {{ mascota.tipoMascota }} • {{ mascota.edad }}
+            </p>
+            <p>
+              <ion-icon name="location"></ion-icon>
+              {{ mascota.ciudad }}
+            </p>
+            <p>
+              <ion-icon name="business"></ion-icon>
+              {{ mascota.centro }}
+            </p>
+            <p>
+              <ion-icon name="person"></ion-icon>
+              {{ mascota.responsable }}
+            </p>
+            <p>
+              <ion-icon name="calendar"></ion-icon>
+              {{ formatearFecha(mascota.fecha_ingreso) }}
+            </p>
+          </div>
+
+          <div class="pet-status">
+            <ion-chip [color]="getEstadoColor(mascota.estado || '')" size="small">
+              <ion-label>{{ mascota.estado }}</ion-label>
+            </ion-chip>
+            <ion-chip [color]="getEstadoColor(mascota.estadoAdopcion || '')" size="small">
+              <ion-label>{{ mascota.estadoAdopcion }}</ion-label>
+            </ion-chip>
+          </div>
+
+          <div class="pet-actions">
+            <ion-button size="small" fill="outline" (click)="abrirModalMascota(true,mascota)">
+              <ion-icon name="create" slot="start"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button size="small" color="danger" fill="outline" (click)="eliminarMascota(mascota)">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Eliminar
+            </ion-button>
+
+            <ion-button expand="block" (click)="subirFoto(mascota.id)">📷 Seleccionar o tomar foto</ion-button>
+
+          </div>
+        </div>
+
+        <div *ngIf="mascota.observaciones" class="pet-observations">
+          <p><strong>Observaciones:</strong> {{ mascota.observaciones }}</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="mascotas.length === 0" class="no-data-message">
+      <div class="no-data-content">
+        <ion-icon name="paw" color="medium"></ion-icon>
+        <h2>No hay mascotas registradas</h2>
+        <p>Agrega la primera mascota haciendo clic en el botón "Agregar Mascota"</p>
+        <ion-button (click)="abrirModalMascota(false,null)" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar Mascota
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'solicitudes'" class="solicitudes-view ion-padding">
+    <div class="section-header">
+      <h2>Gestión de Solicitudes</h2>
+      <p>Total: {{ solicitudes.length }} solicitudes ({{ getSolicitudesPendientes() }} pendientes)</p>
+    </div>
+
+    <ion-card *ngFor="let solicitud of solicitudes" class="request-card">
+      <ion-card-header>
+        <div class="request-header">
+          <div class="request-info">
+            <h4>{{ solicitud.mascota_nombre || 'Mascota' }}</h4>
+            <p>{{ solicitud.nombres }} {{ solicitud.apellidos }}</p>
+          </div>
+          <ion-chip [color]="getEstadoColor(solicitud.estado)">
+            <ion-icon [name]="getEstadoIcon(solicitud.estado)"></ion-icon>
+            <ion-label>{{ solicitud.estado }}</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="request-details">
+          <div class="contact-info">
+            <p>
+              <ion-icon name="mail" color="primary"></ion-icon>
+              {{ solicitud.correo }}
+            </p>
+            <p>
+              <ion-icon name="call" color="primary"></ion-icon>
+              {{ solicitud.celular }}
+            </p>
+          </div>
+          <div class="request-meta">
+            <p>
+              <ion-icon name="calendar" color="medium"></ion-icon>
+              {{ formatearFecha(solicitud.fecha_solicitud) }}
+            </p>
+            <p *ngIf="solicitud.tipoMascota">
+              <ion-icon name="paw" color="secondary"></ion-icon>
+              {{ solicitud.tipoMascota }}
+            </p>
+          </div>
+        </div>
+
+        <div *ngIf="solicitud.observaciones" class="request-observations">
+          <h5>
+            <ion-icon name="chatbubble-ellipses"></ion-icon>
+            Observaciones:
+          </h5>
+          <p class="observations-text">{{ solicitud.observaciones }}</p>
+        </div>
+
+        <div class="request-actions" *ngIf="solicitud.estado !== 'Aprobado' && solicitud.estado !== 'Rechazado'">
+          <ion-button
+            size="small"
+            color="primary"
+            (click)="cambiarEstadoSolicitud(solicitud, 'En revision')"
+            [disabled]="solicitud.estado === 'En revision'">
+            <ion-icon name="eye" slot="start"></ion-icon>
+            {{ solicitud.estado === 'En revision' ? 'En Revisión' : 'Poner en Revisión' }}
+          </ion-button>
+
+          <ion-button
+            size="small"
+            color="success"
+            (click)="cambiarEstadoSolicitud(solicitud, 'Aprobado')">
+            <ion-icon name="checkmark" slot="start"></ion-icon>
+            Aprobar
+          </ion-button>
+
+          <ion-button
+            size="small"
+            color="danger"
+            (click)="cambiarEstadoSolicitud(solicitud, 'Rechazado')">
+            <ion-icon name="close" slot="start"></ion-icon>
+            Rechazar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="solicitudes.length === 0" class="no-data-message">
+      <div class="no-data-content">
+        <ion-icon name="document-text" color="medium"></ion-icon>
+        <h2>No hay solicitudes de adopción</h2>
+        <p>Las solicitudes aparecerán aquí cuando los usuarios las envíen</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div *ngIf="vistaActual === 'centros'" class="centros-view ion-padding">
+    <div class="section-header">
+      <div class="header-content">
+        <h2>Gestión de Centros</h2>
+        <p>Total: {{ centros.length }} centros registrados</p>
+      </div>
+      <ion-button (click)="agregarCentro()" fill="outline">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar Centro
+      </ion-button>
+    </div>
+
+    <ion-card class="list-container">
+      <ion-list lines="none">
+        <ion-item-sliding *ngFor="let centro of centros; trackBy: trackByCentroId">
+
+          <ion-item class="list-item-custom">
+            <div class="item-icon" slot="start">
+              <ion-icon name="business" [color]="centro.activo ? 'success' : 'medium'"></ion-icon>
+            </div>
+
+            <ion-label>
+              <div class="item-content">
+                <h3>{{ centro.nombre }}</h3>
+                <div class="item-details">
+                  <p *ngIf="centro.direccion">
+                    <ion-icon name="location"></ion-icon>
+                    {{ centro.direccion }}
+                  </p>
+                  <p *ngIf="centro.telefono">
+                    <ion-icon name="call"></ion-icon>
+                    {{ centro.telefono }}
+                  </p>
+                  <p *ngIf="centro.email">
+                    <ion-icon name="mail"></ion-icon>
+                    {{ centro.email }}
+                  </p>
+                </div>
+              </div>
+            </ion-label>
+
+            <div class="item-status" slot="end">
+              <ion-chip [color]="centro.activo ? 'success' : 'medium'" size="small">
+                <ion-label>{{ centro.activo ? 'Activo' : 'Inactivo' }}</ion-label>
+              </ion-chip>
+            </div>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="editarCentro(centro)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option [color]="centro.activo ? 'warning' : 'success'"
+                             (click)="cambiarEstadoCentro(centro)">
+              <ion-icon [name]="centro.activo ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="eliminarCentro(centro)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+          <div class="desktop-actions" slot="end">
+            <ion-button size="small" fill="clear" (click)="editarCentro(centro)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small"
+                        [color]="centro.activo ? 'warning' : 'success'"
+                        fill="clear"
+                        (click)="cambiarEstadoCentro(centro)">
+              <ion-icon [name]="centro.activo ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small" color="danger" fill="clear" (click)="eliminarCentro(centro)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+        </ion-item-sliding>
+      </ion-list>
+
+      <div *ngIf="centros.length === 0" class="empty-state">
+        <ion-icon name="business" color="medium"></ion-icon>
+        <h3>No hay centros registrados</h3>
+        <p>Agrega el primer centro haciendo clic en el botón "Agregar Centro"</p>
+        <ion-button (click)="agregarCentro()" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar Centro
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+  <div *ngIf="vistaActual === 'ciudades'" class="ciudades-view ion-padding">
+    <div class="section-header">
+      <div class="header-content">
+        <h2>Gestión de Ciudades</h2>
+        <p>Total: {{ ciudades.length }} ciudades registradas</p>
+      </div>
+      <ion-button (click)="agregarCiudad()" fill="outline">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar Ciudad
+      </ion-button>
+    </div>
+
+    <ion-card class="list-container">
+      <ion-list lines="none">
+        <ion-item-sliding *ngFor="let ciudad of ciudades; trackBy: trackByCiudadId">
+
+          <ion-item class="list-item-custom">
+            <div class="item-icon" slot="start">
+              <ion-icon name="location" [color]="ciudad.activa ? 'warning' : 'medium'"></ion-icon>
+            </div>
+
+            <ion-label>
+              <div class="item-content">
+                <h3>{{ ciudad.nombre }}</h3>
+                <div class="item-details">
+                  <p *ngIf="ciudad.provincia">
+                    <ion-icon name="map"></ion-icon>
+                    {{ ciudad.provincia }}
+                  </p>
+                  <p *ngIf="ciudad.codigo_postal">
+                    <ion-icon name="mail"></ion-icon>
+                    CP: {{ ciudad.codigo_postal }}
+                  </p>
+                </div>
+              </div>
+            </ion-label>
+
+            <div class="item-status" slot="end">
+              <ion-chip [color]="ciudad.activa ? 'success' : 'medium'" size="small">
+                <ion-label>{{ ciudad.activa ? 'Activa' : 'Inactiva' }}</ion-label>
+              </ion-chip>
+            </div>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="editarCiudad(ciudad)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option [color]="ciudad.activa ? 'warning' : 'success'"
+                             (click)="cambiarEstadoCiudad(ciudad)">
+              <ion-icon [name]="ciudad.activa ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="eliminarCiudad(ciudad)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+          <div class="desktop-actions" slot="end">
+            <ion-button size="small" fill="clear" (click)="editarCiudad(ciudad)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small"
+                        [color]="ciudad.activa ? 'warning' : 'success'"
+                        fill="clear"
+                        (click)="cambiarEstadoCiudad(ciudad)">
+              <ion-icon [name]="ciudad.activa ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small" color="danger" fill="clear" (click)="eliminarCiudad(ciudad)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+        </ion-item-sliding>
+      </ion-list>
+
+      <div *ngIf="ciudades.length === 0" class="empty-state">
+        <ion-icon name="location" color="medium"></ion-icon>
+        <h3>No hay ciudades registradas</h3>
+        <p>Agrega la primera ciudad haciendo clic en el botón "Agregar Ciudad"</p>
+        <ion-button (click)="agregarCiudad()" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar Ciudad
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+  <div *ngIf="vistaActual === 'tipos'" class="tipos-view ion-padding">
+    <div class="section-header">
+      <div class="header-content">
+        <h2>Gestión de Tipos de Mascota</h2>
+        <p>Total: {{ tiposMascota.length }} tipos registrados</p>
+      </div>
+      <ion-button (click)="agregarTipo()" fill="outline">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar Tipo
+      </ion-button>
+    </div>
+
+    <ion-card class="list-container">
+      <ion-list lines="none">
+        <ion-item-sliding *ngFor="let tipo of tiposMascota; trackBy: trackByTipoId">
+
+          <ion-item class="list-item-custom">
+            <div class="item-icon" slot="start">
+              <ion-icon name="paw" [color]="tipo.activo ? 'secondary' : 'medium'"></ion-icon>
+            </div>
+
+            <ion-label>
+              <div class="item-content">
+                <h3>{{ tipo.nombre }}</h3>
+                <div class="item-details">
+                  <p *ngIf="tipo.descripcion">
+                    <ion-icon name="document-text"></ion-icon>
+                    {{ tipo.descripcion }}
+                  </p>
+                  <p *ngIf="tipo.cuidados_especiales">
+                    <ion-icon name="medical"></ion-icon>
+                    {{ tipo.cuidados_especiales }}
+                  </p>
+                </div>
+              </div>
+            </ion-label>
+
+            <div class="item-status" slot="end">
+              <ion-chip [color]="tipo.activo ? 'success' : 'medium'" size="small">
+                <ion-label>{{ tipo.activo ? 'Activo' : 'Inactivo' }}</ion-label>
+              </ion-chip>
+            </div>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="editarTipo(tipo)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option [color]="tipo.activo ? 'warning' : 'success'"
+                             (click)="cambiarEstadoTipo(tipo)">
+              <ion-icon [name]="tipo.activo ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="eliminarTipo(tipo)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+          <div class="desktop-actions" slot="end">
+            <ion-button size="small" fill="clear" (click)="editarTipo(tipo)">
+              <ion-icon name="create" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small"
+                        [color]="tipo.activo ? 'warning' : 'success'"
+                        fill="clear"
+                        (click)="cambiarEstadoTipo(tipo)">
+              <ion-icon [name]="tipo.activo ? 'pause' : 'play'" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small" color="danger" fill="clear" (click)="eliminarTipo(tipo)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+        </ion-item-sliding>
+      </ion-list>
+
+      <div *ngIf="tiposMascota.length === 0" class="empty-state">
+        <ion-icon name="paw" color="medium"></ion-icon>
+        <h3>No hay tipos de mascota registrados</h3>
+        <p>Agrega el primer tipo haciendo clic en el botón "Agregar Tipo"</p>
+        <ion-button (click)="agregarTipo()" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar Tipo
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+
+  <div *ngIf="cargando" class="loading-container ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando datos...</p>
+  </div>
+</ion-content>

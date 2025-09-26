@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+<ion-toolbar>
+    <ion-title>Recuperar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+
+    <div class="logo-container">
+      <ion-icon name="paw" size="large"></ion-icon>
+      <h1>PAE Adopciones</h1>
+      <p>Protección Animal Ecuador</p>
+    </div>
+    <!-- Paso 1: pedir email -->
+    <div *ngIf="step === 1">
+      <form (ngSubmit)="sendCode()">
+        <ion-item>
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input type="email" [(ngModel)]="email" name="email"></ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit">Siguiente</ion-button>
+      </form>
+    </div>
+
+    <!-- Paso 2: validar código y cambiar contraseña -->
+    <div *ngIf="step === 2">
+      <form (ngSubmit)="resetPassword()">
+        <ion-item>
+          <ion-label position="floating">Código</ion-label>
+          <ion-input type="text" [(ngModel)]="code" name="code"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Nueva Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="password" name="password"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Repetir Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="password2" name="password2"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" type="submit">Enviar</ion-button>
+      </form>
+    </div>
+  </div>
+
+</ion-content>

@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ editar ? 'Editar Mascota' : 'Nueva Mascota' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardar()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input [(ngModel)]="mascota.nombre" name="nombre" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Edad</ion-label>
+        <ion-input [(ngModel)]="mascota.edad" name="edad"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha Ingreso</ion-label>
+        <ion-datetime [(ngModel)]="mascota.fecha_ingreso" name="fecha_ingreso" presentation="date"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Tipo Mascota</ion-label>
+        <ion-select [(ngModel)]="mascota.tipo_mascota_id" name="tipo_mascota_id">
+          <ion-select-option *ngFor="let tipo of data.tiposMascota" [value]="tipo.id">{{ tipo.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Centro</ion-label>
+        <ion-select [(ngModel)]="mascota.centro_id" name="centro_id">
+          <ion-select-option *ngFor="let centro of data.centros" [value]="centro.id">{{ centro.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Ciudad</ion-label>
+        <ion-select [(ngModel)]="mascota.ciudad_id" name="ciudad_id">
+          <ion-select-option *ngFor="let ciudad of data.ciudades" [value]="ciudad.id">{{ ciudad.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Estado de Adopción</ion-label>
+        <ion-select [(ngModel)]="mascota.estado_adopcion_id" name="estado_adopcion_id">
+          <ion-select-option *ngFor="let estado of data.estadosAdopcion" [value]="estado.id">
+            {{ estado.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+
+      <!-- Estado General (de data.estados) -->
+      <ion-item>
+        <ion-label position="stacked">Estado General</ion-label>
+        <ion-select [(ngModel)]="mascota.estado_id" name="estado_id">
+          <ion-select-option *ngFor="let estado of data.estados" [value]="estado.id">
+            {{ estado.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Estado de Salud (de data.estadosSalud) -->
+      <ion-item>
+        <ion-label position="stacked">Estado de Salud</ion-label>
+        <ion-select [(ngModel)]="mascota.estados_salud_id" name="estados_salud_id">
+          <ion-select-option *ngFor="let salud of data.estadosSalud" [value]="salud.id">
+            {{ salud.estado }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Responsable (de data.usuarios) -->
+      <ion-item>
+        <ion-label position="stacked">Responsable</ion-label>
+        <ion-select [(ngModel)]="mascota.responsable_id" name="responsable_id">
+          <ion-select-option *ngFor="let user of data.usuarios" [value]="user.id">
+            {{ user.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Observaciones</ion-label>
+        <ion-textarea [(ngModel)]="mascota.observaciones" name="observaciones"></ion-textarea>
+      </ion-item>
+
+    </ion-list>
+
+    <ion-footer class="ion-padding">
+      <ion-button expand="block" type="submit">
+        {{ editar ? 'Actualizar' : 'Guardar' }}
+      </ion-button>
+    </ion-footer>
+  </form>
+</ion-content>

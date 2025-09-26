@@ -1,0 +1,14 @@
+<div [class]="containerClasses">
+  <div class="loading-content">
+    <ion-spinner
+      [name]="spinner"
+      [color]="color"
+      [style.width]="spinnerSize"
+      [style.height]="spinnerSize">
+    </ion-spinner>
+    
+    <p class="loading-message" [class]="'message-' + size" *ngIf="message">
+      {{ message }}
+    </p>
+  </div>
+</div>

@@ -1,0 +1,225 @@
+<ion-card 
+  [class]="cardClasses"
+  [button]="!disabled"
+  (click)="handleViewDetails()">
+  
+  <ion-card-header class="solicitud-header">
+    <div class="header-content">
+      <div class="solicitud-title">
+        <h3>{{ solicitud.mascota_nombre || 'Mascota' }}</h3>
+        <div class="solicitud-meta">
+          <span class="solicitud-id">ID: {{ solicitud.id }}</span>
+          <span class="solicitud-date">{{ timeAgo }}</span>
+        </div>
+      </div>
+      
+      <div class="estado-container">
+        <ion-chip [color]="estadoColor" class="estado-chip">
+          <ion-icon [name]="estadoIcon"></ion-icon>
+          <ion-label>{{ solicitud.estado }}</ion-label>
+        </ion-chip>
+        
+        <div class="priority-indicator" [class]="'priority-' + priorityLevel" *ngIf="isAdmin && priorityLevel !== 'low'">
+          <ion-icon name="alert-circle" *ngIf="priorityLevel === 'high'"></ion-icon>
+          <ion-icon name="warning" *ngIf="priorityLevel === 'medium'"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </ion-card-header>
+
+  <ion-card-content class="solicitud-content">
+    <div class="mascota-section" *ngIf="showMascotaInfo && !compact">
+      <div class="mascota-image-container" *ngIf="solicitud.foto">
+        <img
+          [src]="solicitud.foto || defaultImage"
+          [alt]="solicitud.mascota_nombre"
+          class="mascota-thumbnail"
+          (error)="handleImageError($event)"
+          loading="lazy">
+      </div>
+      
+      <div class="mascota-details">
+        <div class="detail-row" *ngIf="solicitud.tipoMascota">
+          <ion-icon name="paw" color="primary"></ion-icon>
+          <span>{{ solicitud.tipoMascota }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="solicitud.edad">
+          <ion-icon name="time" color="secondary"></ion-icon>
+          <span>{{ solicitud.edad }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="solicitud.ciudad">
+          <ion-icon name="location" color="medium"></ion-icon>
+          <span>{{ solicitud.ciudad }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="solicitud.centro">
+          <ion-icon name="business" color="medium"></ion-icon>
+          <span>{{ solicitud.centro }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="usuario-section" *ngIf="showUserInfo && isAdmin">
+      <h4 class="section-title">
+        <ion-icon name="person-circle"></ion-icon>
+        Datos del Solicitante
+      </h4>
+      
+      <div class="usuario-info">
+        <div class="detail-row">
+          <ion-icon name="person" color="primary"></ion-icon>
+          <span>{{ solicitud.nombres }} {{ solicitud.apellidos }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="solicitud.correo">
+          <ion-icon name="mail" color="primary"></ion-icon>
+          <span>{{ solicitud.correo }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="solicitud.celular">
+          <ion-icon name="call" color="primary"></ion-icon>
+          <span>{{ solicitud.celular }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="estado-section">
+      <div class="estado-description">
+        <ion-icon [name]="estadoIcon" [color]="estadoColor"></ion-icon>
+        <p>{{ estadoDescripcion }}</p>
+      </div>
+      
+      <div class="fechas-info" *ngIf="!compact">
+        <div class="fecha-item">
+          <small>
+            <ion-icon name="calendar" color="medium"></ion-icon>
+            Solicitud: {{ solicitud.fecha_solicitud | dateFormat:'short' }}
+          </small>
+        </div>
+        
+        <div class="fecha-item" *ngIf="solicitud.fecha_actualizacion">
+          <small>
+            <ion-icon name="sync" color="medium"></ion-icon>
+            Actualizada: {{ solicitud.fecha_actualizacion | dateFormat:'short' }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-timeline" *ngIf="showProgressSteps">
+      <div class="timeline-container">
+        <div 
+          class="timeline-step" 
+          *ngFor="let step of progressSteps; let i = index"
+          [class.active]="step.active"
+          [class.completed]="step.completed">
+          
+          <div class="step-circle">
+            <ion-icon [name]="step.icon"></ion-icon>
+          </div>
+          
+          <span class="step-label">{{ step.label }}</span>
+          
+          <div class="step-line" *ngIf="i < progressSteps.length - 1" [class.completed]="step.completed"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="observaciones-section" *ngIf="solicitud.observaciones && !compact">
+      <h5 class="section-title">
+        <ion-icon name="chatbubble-ellipses"></ion-icon>
+        Observaciones
+      </h5>
+      <div class="observaciones-content">
+        <p>{{ solicitud.observaciones | truncate:200 }}</p>
+      </div>
+    </div>
+
+    <div class="rechazo-section" *ngIf="solicitud.motivo_rechazo && solicitud.estado === EstadoSolicitud.RECHAZADO">
+      <h5 class="section-title rejection-title">
+        <ion-icon name="information-circle" color="danger"></ion-icon>
+        Motivo del Rechazo
+      </h5>
+      <div class="rechazo-content">
+        <p>{{ solicitud.motivo_rechazo }}</p>
+      </div>
+    </div>
+  </ion-card-content>
+
+  <div class="action-buttons" *ngIf="showActions && !disabled">
+    <div class="admin-actions" *ngIf="isAdmin">
+      <ion-button 
+        *ngIf="canReview"
+        size="small"
+        color="primary"
+        fill="outline"
+        (click)="$event.stopPropagation(); handleReview()">
+        <ion-icon name="eye" slot="start"></ion-icon>
+        Revisar
+      </ion-button>
+
+      <ion-button 
+        *ngIf="canApprove"
+        size="small"
+        color="success"
+        (click)="$event.stopPropagation(); handleApprove()">
+        <ion-icon name="checkmark" slot="start"></ion-icon>
+        Aprobar
+      </ion-button>
+
+      <ion-button 
+        *ngIf="canReject"
+        size="small"
+        color="danger"
+        fill="outline"
+        (click)="$event.stopPropagation(); handleReject()">
+        <ion-icon name="close" slot="start"></ion-icon>
+        Rechazar
+      </ion-button>
+
+      <ion-button 
+        size="small"
+        fill="clear"
+        (click)="$event.stopPropagation(); handleContact()">
+        <ion-icon name="call" slot="start"></ion-icon>
+        Contactar
+      </ion-button>
+    </div>
+
+    <!-- Acciones para usuarios -->
+    <div class="user-actions" *ngIf="!isAdmin">
+      <ion-button 
+        fill="clear"
+        size="small"
+        (click)="$event.stopPropagation(); handleViewDetails()">
+        <ion-icon name="information-circle" slot="start"></ion-icon>
+        Ver Detalles
+      </ion-button>
+
+      <ion-button 
+        *ngIf="canCancel"
+        color="danger"
+        fill="outline"
+        size="small"
+        (click)="$event.stopPropagation(); handleCancel()">
+        <ion-icon name="ban" slot="start"></ion-icon>
+        Cancelar
+      </ion-button>
+
+      <ion-button 
+        *ngIf="solicitud.estado === EstadoSolicitud.APROBADO"
+        color="success"
+        disabled
+        size="small">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        ¡Aprobada!
+      </ion-button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" *ngIf="disabled">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-card>

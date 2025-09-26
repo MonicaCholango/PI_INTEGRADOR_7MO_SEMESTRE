@@ -1,0 +1,234 @@
+<ion-content [fullscreen]="true" id="main-content">
+
+  <div class="profile-header ion-padding" *ngIf="usuario">
+    <div class="avatar-container">
+      <ion-icon name="person-circle" size="large" color="primary"></ion-icon>
+    </div>
+    <h2>{{ usuario.nombres }} {{ usuario.apellidos }}</h2>
+    <ion-chip [color]="usuario.tipoUsuario === 'admin' ? 'success' : 'primary'">
+      <ion-icon [name]="usuario.tipoUsuario === 'admin' ? 'shield-checkmark' : 'heart'"></ion-icon>
+      <ion-label>{{ usuario.tipoUsuario === 'admin' ? 'Administrador' : 'Adoptante' }}</ion-label>
+    </ion-chip>
+  </div>
+
+  <div class="profile-content ion-padding">
+    <form [formGroup]="perfilForm" (ngSubmit)="guardarCambios()">
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="person"></ion-icon>
+            Información Personal
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">Nombres *</ion-label>
+            <ion-input
+              formControlName="nombres"
+              [readonly]="!editando"
+              [class.ion-invalid]="perfilForm.get('nombres')?.invalid && perfilForm.get('nombres')?.touched">
+            </ion-input>
+          </ion-item>
+
+          <div *ngIf="perfilForm.get('nombres')?.invalid && perfilForm.get('nombres')?.touched" class="error-message">
+            <small>Los nombres son requeridos</small>
+          </div>
+
+          <ion-item>
+            <ion-label position="floating">Apellidos *</ion-label>
+            <ion-input
+              formControlName="apellidos"
+              [readonly]="!editando"
+              [class.ion-invalid]="perfilForm.get('apellidos')?.invalid && perfilForm.get('apellidos')?.touched">
+            </ion-input>
+          </ion-item>
+
+          <div *ngIf="perfilForm.get('apellidos')?.invalid && perfilForm.get('apellidos')?.touched" class="error-message">
+            <small>Los apellidos son requeridos</small>
+          </div>
+
+          <ion-item>
+            <ion-label position="floating">Cédula</ion-label>
+            <ion-input
+              formControlName="cedula"
+              readonly="true"
+              color="medium">
+            </ion-input>
+          </ion-item>
+
+          <p class="help-text">
+            <ion-icon name="information-circle"></ion-icon>
+            La cédula no se puede modificar
+          </p>
+
+          <ion-item>
+            <ion-label position="floating">Fecha de Nacimiento</ion-label>
+            <ion-datetime
+              formControlName="fechaNacimiento"
+              presentation="date"
+              [disabled]="!editando">
+            </ion-datetime>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Ciudad *</ion-label>
+            <ion-select
+              formControlName="ciudad_id"
+              [disabled]="!editando"
+              interface="popover"
+              placeholder="">
+              <ion-select-option *ngFor="let ciudad of ciudades" [value]="ciudad.id">
+                {{ ciudad.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="call"></ion-icon>
+            Información de Contacto
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">Email *</ion-label>
+            <ion-input
+              type="email"
+              formControlName="correo"
+              [readonly]="!editando"
+              [class.ion-invalid]="perfilForm.get('correo')?.invalid && perfilForm.get('correo')?.touched">
+            </ion-input>
+          </ion-item>
+
+          <div *ngIf="perfilForm.get('correo')?.invalid && perfilForm.get('correo')?.touched" class="error-message">
+            <small *ngIf="perfilForm.get('correo')?.errors?.['required']">El email es requerido</small>
+            <small *ngIf="perfilForm.get('correo')?.errors?.['email']">Formato de email inválido</small>
+          </div>
+
+          <ion-item>
+            <ion-label position="floating">Teléfono *</ion-label>
+            <ion-input
+              type="tel"
+              formControlName="telefono"
+              [readonly]="!editando"
+              [class.ion-invalid]="perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched">
+            </ion-input>
+          </ion-item>
+
+          <div *ngIf="perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched" class="error-message">
+            <small>El teléfono es requerido</small>
+          </div>
+
+          <ion-item>
+            <ion-label position="floating">Celular *</ion-label>
+            <ion-input
+              type="tel"
+              formControlName="celular"
+              [readonly]="!editando"
+              [class.ion-invalid]="perfilForm.get('celular')?.invalid && perfilForm.get('celular')?.touched">
+            </ion-input>
+          </ion-item>
+
+          <div *ngIf="perfilForm.get('celular')?.invalid && perfilForm.get('celular')?.touched" class="error-message">
+            <small>El celular es requerido</small>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="usuario?.tipoUsuario === 'admin'">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="business"></ion-icon>
+            Información Laboral
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">Área</ion-label>
+            <ion-input
+              formControlName="area"
+              [readonly]="!editando">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Centro de Trabajo</ion-label>
+            <ion-note slot="end" color="medium">
+              {{ getCentroNombre() || 'No especificado' }}
+            </ion-note>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="action-buttons">
+        <ion-button
+          *ngIf="!editando"
+          expand="block"
+          (click)="toggleEdicion()"
+          fill="outline">
+          <ion-icon name="create" slot="start"></ion-icon>
+          Editar Perfil
+        </ion-button>
+
+        <div *ngIf="editando" class="edit-buttons">
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="!perfilForm.valid"
+            color="success">
+            <ion-icon name="save" slot="start"></ion-icon>
+            Guardar Cambios
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="toggleEdicion()"
+            color="medium">
+            <ion-icon name="close" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="additional-actions ion-padding">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="settings"></ion-icon>
+          Acciones de Cuenta
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item button (click)="cambiarPassword()">
+          <ion-icon name="key" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>Cambiar Contraseña</h3>
+            <p>Actualiza tu contraseña de acceso</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        </ion-item>
+
+        <ion-item button (click)="cerrarSesion()">
+          <ion-icon name="log-out" slot="start" color="danger"></ion-icon>
+          <ion-label>
+            <h3>Cerrar Sesión</h3>
+            <p>Salir de la aplicación</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

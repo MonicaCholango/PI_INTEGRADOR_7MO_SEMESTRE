@@ -1,0 +1,204 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <div class="denuncias-form ion-padding">
+    <div class="page-header">
+      <h1>
+        <ion-icon name="shield-half" color="danger"></ion-icon>
+        Reportar Denuncia
+      </h1>
+      <p>Ayúdanos a proteger a los animales reportando casos de maltrato o abandono</p>
+    </div>
+
+    <ion-card class="form-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="document-text" color="primary"></ion-icon>
+          Información de la Denuncia
+        </ion-card-title>
+        <ion-card-subtitle>
+          Completa todos los campos para procesar tu denuncia
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list lines="none" class="form-list">
+          
+          <div class="form-section">
+            <h3 class="section-title">
+              <ion-icon name="person" color="primary"></ion-icon>
+              Información del Denunciante
+            </h3>
+            
+            <ion-item class="form-item">
+              <ion-input 
+                label="Nombre Completo" 
+                labelPlacement="stacked"
+                [(ngModel)]="form.denunciante_nombre" 
+                placeholder="Ingresa tu nombre completo"
+                required>
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input 
+                label="Correo Electrónico" 
+                labelPlacement="stacked"
+                type="email"
+                [(ngModel)]="form.denunciante_email" 
+                placeholder="tu@email.com"
+                required>
+              </ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input 
+                label="Teléfono de Contacto" 
+                labelPlacement="stacked"
+                type="tel"
+                [(ngModel)]="form.denunciante_telefono" 
+                placeholder="0999123456"
+                required>
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <ion-icon name="location" color="warning"></ion-icon>
+              Ubicación del Incidente
+            </h3>
+            
+            <ion-item class="form-item">
+              <ion-select 
+                label="Ciudad" 
+                labelPlacement="stacked"
+                [(ngModel)]="form.ciudad_id" 
+                interface="popover" 
+                placeholder="Selecciona la ciudad"
+                required>
+                <ion-select-option *ngFor="let ciudad of ciudades" [value]="ciudad.id">
+                  {{ ciudad.nombre }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-input 
+                label="Dirección Específica" 
+                labelPlacement="stacked"
+                [(ngModel)]="form.direccion" 
+                placeholder="Ej. Calle 123 y Av. Principal, Sector Norte"
+                required>
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <ion-icon name="paw" color="tertiary"></ion-icon>
+              Detalles del Caso
+            </h3>
+            
+            <ion-item class="form-item">
+              <ion-select 
+                label="Tipo de Animal" 
+                labelPlacement="stacked"
+                [(ngModel)]="form.tipo_mascota_id" 
+                interface="popover" 
+                placeholder="Selecciona el tipo"
+                required>
+                <ion-select-option *ngFor="let tipo of tiposMascota" [value]="tipo.id">
+                  {{ tipo.nombre }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-textarea 
+                label="Descripción del Incidente" 
+                labelPlacement="stacked"
+                [(ngModel)]="form.observaciones"
+                placeholder="Describe detalladamente lo que has observado. Incluye fecha, hora y cualquier detalle relevante..."
+                rows="4"
+                required>
+              </ion-textarea>
+            </ion-item>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <ion-icon name="camera" color="medium"></ion-icon>
+              Evidencia Fotográfica
+            </h3>
+            
+            <div class="photo-section">
+              <ion-button 
+                expand="block" 
+                fill="outline" 
+                (click)="tomarFoto()"
+                [disabled]="cargando">
+                <ion-icon name="camera" slot="start"></ion-icon>
+                {{ preview ? 'Cambiar Foto' : 'Tomar o Seleccionar Foto' }}
+              </ion-button>
+              
+              <div *ngIf="preview" class="photo-preview">
+                <img [src]="preview" alt="Foto de evidencia">
+                <p class="photo-note">
+                  <ion-icon name="information-circle" color="primary"></ion-icon>
+                  Foto adjuntada correctamente
+                </p>
+              </div>
+              
+              <p class="photo-help" *ngIf="!preview">
+                <ion-icon name="help-circle" color="medium"></ion-icon>
+                La evidencia fotográfica es opcional pero muy útil para procesar tu denuncia
+              </p>
+            </div>
+          </div>
+
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="submit-section">
+      <ion-button 
+        expand="block" 
+        size="large"
+        (click)="enviar()"
+        [disabled]="cargando || !form.denunciante_nombre || !form.denunciante_email || !form.ciudad_id">
+        <ion-icon name="send" slot="start"></ion-icon>
+        {{ cargando ? 'Enviando...' : 'Enviar Denuncia' }}
+      </ion-button>
+      
+      <p class="submit-note">
+        <ion-icon name="shield-checkmark" color="success"></ion-icon>
+        Tu denuncia será revisada por nuestro equipo en un plazo máximo de 24 horas
+      </p>
+    </div>
+
+    <ion-card class="emergency-card">
+      <ion-card-content>
+        <h4>
+          <ion-icon name="warning" color="danger"></ion-icon>
+          ¿Es una emergencia?
+        </h4>
+        <p>Si el animal está en peligro inmediato, contacta directamente:</p>
+        <div class="emergency-contacts">
+          <ion-chip color="danger">
+            <ion-icon name="call"></ion-icon>
+            <ion-label>911 - Emergencias</ion-label>
+          </ion-chip>
+          <ion-chip color="primary">
+            <ion-icon name="call"></ion-icon>
+            <ion-label>ECU-911</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <div *ngIf="cargando" class="loading-overlay">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando datos...</p>
+  </div>
+</ion-content>

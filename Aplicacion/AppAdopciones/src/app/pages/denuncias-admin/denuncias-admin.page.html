@@ -1,0 +1,98 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <div class="denuncias-admin-view ion-padding">
+    
+    <!-- Header con estadísticas -->
+    <div class="section-header">
+      <div class="header-content">
+        <h2>
+          <ion-icon name="shield-half" color="danger"></ion-icon>
+          Gestión de Denuncias
+        </h2>
+        <p>Total: {{ denuncias.length }} denuncias reportadas</p>
+      </div>
+      
+      <div class="stats-summary">
+        <ion-chip color="danger" outline="true">
+          <ion-icon name="time-outline"></ion-icon>
+          <ion-label>{{ denuncias.length }} Pendientes</ion-label>
+        </ion-chip>
+        <ion-chip color="success" outline="true">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <ion-label>89% Resueltos</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Lista de denuncias como cards -->
+    <div class="denuncias-grid" *ngIf="denuncias.length > 0">
+      <ion-card 
+        *ngFor="let denuncia of denuncias; let i = index; trackBy: trackByDenunciaId" 
+        class="denuncia-card"
+        button="true"
+        (click)="abrirDetallesDenuncia(denuncia)">
+        
+        <ion-card-header>
+          <div class="card-header-content">
+            <div class="status-indicator"></div>
+            <div class="location-info">
+              <ion-card-title>
+                <ion-icon name="location" color="success"></ion-icon>
+                {{ denuncia.direccion || 'Dirección no especificada' }}
+              </ion-card-title>
+              <ion-card-subtitle>
+                <ion-icon name="calendar" color="medium"></ion-icon>
+                {{ formatearFecha(denuncia.fecha_reporte) }}
+              </ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="card-summary">
+            <div class="summary-item" *ngIf="denuncia.denunciante_nombre">
+              <ion-icon name="person" color="success"></ion-icon>
+              <span>{{ denuncia.denunciante_nombre }}</span>
+            </div>
+            <div class="summary-item" *ngIf="denuncia.tipo_mascota">
+              <ion-icon name="paw" color="success"></ion-icon>
+              <span>{{ denuncia.tipo_mascota }}</span>
+            </div>
+            <div class="summary-item" *ngIf="denuncia.ciudad">
+              <ion-icon name="business" color="success"></ion-icon>
+              <span>{{ denuncia.ciudad }}</span>
+            </div>
+          </div>
+          
+          <div class="description-preview" *ngIf="denuncia.observaciones">
+            <p>{{ denuncia.observaciones | slice:0:120 }}{{ denuncia.observaciones.length > 120 ? '...' : '' }}</p>
+          </div>
+
+          <div class="card-actions">
+            <ion-chip color="success" size="small">
+              <ion-icon name="eye"></ion-icon>
+              <ion-label>Ver Detalles</ion-label>
+            </ion-chip>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="denuncias.length === 0 && !cargando" class="empty-state">
+      <ion-icon name="shield-checkmark" color="success"></ion-icon>
+      <h3>No hay denuncias reportadas</h3>
+      <p>¡Excelente! No hay denuncias pendientes en este momento.</p>
+      <ion-button fill="outline" color="success" (click)="cargarDatos()">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Actualizar
+      </ion-button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="cargando" class="loading-container">
+      <ion-spinner name="crescent" color="success"></ion-spinner>
+      <p>Cargando denuncias...</p>
+    </div>
+
+  </div>
+</ion-content>

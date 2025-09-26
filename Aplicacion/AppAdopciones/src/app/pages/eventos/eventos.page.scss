@@ -1,0 +1,540 @@
+// Importar Swiper estilos
+@import 'swiper/css';
+@import 'swiper/css/pagination';
+
+.section-header {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  color: white;
+  border-radius: 0 0 var(--border-radius-xl, 16px) var(--border-radius-xl, 16px);
+  margin-bottom: 1.5rem;
+
+  .header-content {
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.8rem;
+      font-weight: var(--font-weight-bold, 700);
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+  }
+}
+
+.hero-section {
+  background: linear-gradient(135deg, 
+    rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1) 0%, 
+    rgba(var(--ion-color-secondary-rgb, 92, 107, 192), 0.05) 100%);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius-xl, 16px);
+  margin-left: 1rem;
+  margin-right: 1rem;
+
+  .hero-content {
+    h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.8rem;
+      font-weight: var(--font-weight-bold, 700);
+      color: var(--ion-color-primary);
+    }
+
+    p {
+      margin: 0;
+      color: var(--ion-color-medium);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+.filters-section {
+  margin-bottom: 1.5rem;
+
+  ion-segment {
+    --background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1);
+    border-radius: var(--border-radius-large, 12px);
+    margin: 0 1rem;
+  }
+
+  ion-segment-button {
+    --color: var(--ion-color-primary);
+    --color-checked: white;
+    --background-checked: var(--ion-color-primary);
+    --indicator-color: transparent;
+    --border-radius: var(--border-radius-medium, 8px);
+    font-weight: var(--font-weight-medium, 500);
+    min-height: 40px;
+  }
+}
+
+.section-title {
+  margin-bottom: 1.5rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--ion-color-primary);
+  }
+}
+
+// Grid principal para eventos
+.eventos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0 1rem;
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  @media (min-width: 577px) and (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 0 1.5rem;
+  }
+
+  @media (min-width: 1025px) {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+
+  // Asegurar que las tarjetas mantengan altura consistente
+  app-evento-card {
+    height: fit-content;
+    min-height: 320px;
+  }
+}
+
+.destacados-section {
+  margin-bottom: 2rem;
+
+  .destacados-slider {
+    padding: 0 1rem 1rem;
+    
+    swiper-slide {
+      width: 300px !important;
+      max-width: 85vw;
+      
+      app-evento-card {
+        width: 100%;
+        display: block;
+        height: 100%;
+      }
+
+      @media (max-width: 576px) {
+        width: 280px !important;
+        max-width: 90vw;
+      }
+    }
+    
+    // Personalizar paginación de Swiper
+    ::ng-deep .swiper-pagination {
+      position: relative;
+      margin-top: 1rem;
+      
+      .swiper-pagination-bullet {
+        background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.3);
+        opacity: 1;
+        width: 8px;
+        height: 8px;
+        transition: all 0.3s ease;
+        
+        &.swiper-pagination-bullet-active {
+          background: var(--ion-color-primary);
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+}
+
+.admin-eventos-view {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+
+      ion-button {
+        align-self: stretch;
+        margin-top: 1rem;
+      }
+    }
+  }
+
+  .eventos-admin-grid {
+    padding-bottom: 2rem;
+  }
+}
+
+.adoptante-eventos-view {
+  .eventos-list {
+    padding-bottom: 2rem;
+  }
+}
+
+// Loading y estados vacíos
+app-loading-spinner {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+app-empty-state {
+  grid-column: 1 / -1;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Animaciones
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.eventos-grid {
+  app-evento-card {
+    animation: slideInUp 0.4s ease-out both;
+
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.2s; }
+    &:nth-child(4) { animation-delay: 0.25s; }
+    &:nth-child(5) { animation-delay: 0.3s; }
+    &:nth-child(6) { animation-delay: 0.35s; }
+    &:nth-child(7) { animation-delay: 0.4s; }
+    &:nth-child(8) { animation-delay: 0.45s; }
+  }
+}
+
+.destacados-slider {
+  swiper-slide {
+    animation: slideInFromRight 0.5s ease-out both;
+
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(4) { animation-delay: 0.4s; }
+    &:nth-child(5) { animation-delay: 0.5s; }
+  }
+}
+
+// Responsive específico para tablets
+@media (min-width: 768px) and (max-width: 1024px) {
+  .section-title {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .filters-section {
+    ion-segment {
+      margin: 0 1.5rem;
+    }
+  }
+
+  .hero-section {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+  }
+
+  .destacados-section {
+    .destacados-slider {
+      padding: 0 1.5rem 1rem;
+    }
+  }
+}
+
+// Responsive para móviles pequeños
+@media (max-width: 480px) {
+  .hero-section {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+
+    .hero-content {
+      h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .header-content {
+      h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .section-title {
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
+
+  .filters-section {
+    ion-segment {
+      margin: 0 0.5rem;
+      
+      ion-segment-button {
+        font-size: 0.8rem;
+        min-height: 36px;
+      }
+    }
+  }
+
+  .eventos-grid {
+    padding: 0 0.5rem;
+    gap: 0.75rem;
+  }
+
+  .destacados-section {
+    .destacados-slider {
+      padding: 0 0.5rem 1rem;
+    }
+  }
+}
+
+// Dark mode
+@media (prefers-color-scheme: dark) {
+  .hero-section {
+    background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.15);
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, 
+      rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.8) 0%, 
+      rgba(var(--ion-color-secondary-rgb, 92, 107, 192), 0.6) 100%);
+  }
+
+  .filters-section {
+    ion-segment {
+      --background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// Accesibilidad
+@media (prefers-reduced-motion: reduce) {
+  .eventos-grid app-evento-card,
+  .destacados-slider swiper-slide {
+    animation: none;
+  }
+
+  .destacados-slider ::ng-deep .swiper-pagination-bullet {
+    transition: none;
+
+    &.swiper-pagination-bullet-active {
+      transform: none;
+    }
+  }
+}
+
+// Alto contraste
+@media (prefers-contrast: high) {
+  .section-header {
+    border: 2px solid white;
+  }
+
+  .hero-section {
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  .filters-section {
+    ion-segment {
+      --background: white;
+      border: 2px solid var(--ion-color-primary);
+
+      ion-segment-button {
+        --color: var(--ion-color-primary);
+        border: 1px solid var(--ion-color-primary);
+
+        &.segment-button-checked {
+          --background-checked: var(--ion-color-primary);
+          --color-checked: white;
+          border-color: var(--ion-color-primary);
+        }
+      }
+    }
+  }
+}
+
+// Estados de carga específicos
+.eventos-grid.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.destacados-slider.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+// Mejoras para la interacción táctil
+@media (pointer: coarse) {
+  .filters-section {
+    ion-segment-button {
+      min-height: 44px;
+      font-size: 0.9rem;
+    }
+  }
+
+  .section-header {
+    ion-button {
+      --height: 44px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Estilos para el alert de detalles del evento
+:global(.evento-details-alert) {
+  .alert-wrapper {
+    max-width: 90vw;
+    max-height: 80vh;
+  }
+
+  .alert-title {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--ion-color-primary);
+    text-align: left;
+  }
+
+  .alert-sub-title {
+    font-size: 0.95rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 0.5rem;
+  }
+
+  .alert-message {
+    text-align: left;
+    line-height: 1.6;
+    max-height: 60vh;
+    overflow-y: auto;
+
+    p {
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+
+      strong {
+        color: var(--ion-color-primary);
+        font-weight: var(--font-weight-semibold, 600);
+      }
+    }
+  }
+
+  .alert-button-group {
+    .alert-button {
+      font-weight: var(--font-weight-medium, 500);
+      
+      &.alert-button-role-cancel {
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  :global(.evento-details-alert) {
+    .alert-wrapper {
+      max-width: 95vw;
+    }
+
+    .alert-message {
+      p {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .section-header,
+  .hero-section {
+    background: white !important;
+    color: black !important;
+    border: 1px solid black;
+  }
+
+  .filters-section,
+  .destacados-slider,
+  app-loading-spinner {
+    display: none !important;
+  }
+
+  .eventos-grid {
+    display: block;
+    
+    app-evento-card {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      border: 1px solid black;
+    }
+  }
+}

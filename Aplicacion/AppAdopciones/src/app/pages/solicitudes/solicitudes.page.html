@@ -1,0 +1,152 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="welcome-header ion-padding" *ngIf="usuario">
+    <h2>Hola {{ usuario.nombres }}!</h2>
+    <p>Aquí puedes ver el estado de todas tus solicitudes de adopción</p>
+  </div>
+
+  <div *ngIf="cargando" class="loading-container ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando solicitudes...</p>
+  </div>
+
+  <div *ngIf="!cargando && solicitudes.length > 0" class="solicitudes-list ion-padding">
+    <ion-card *ngFor="let solicitud of solicitudes" class="solicitud-card">
+      <ion-card-header>
+        <div class="solicitud-header">
+          <div class="mascota-info">
+            <h2>{{ solicitud.mascota_nombre }}</h2>
+            <p>{{ solicitud.tipoMascota }} • {{ solicitud.edad }}</p>
+          </div>
+          <ion-chip [color]="getEstadoColor(solicitud.estado)" class="estado-chip">
+            <ion-icon [name]="getEstadoIcon(solicitud.estado)"></ion-icon>
+            <ion-label>{{ solicitud.estado }}</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="mascota-details">
+          <div class="mascota-image-container">
+            <img
+              [src]="solicitud.foto || 'assets/images/mascota-default.jpg'"
+              [alt]="solicitud.mascota_nombre"
+              class="mascota-thumbnail"
+              (error)="onImageError($event)">
+          </div>
+
+          <div class="mascota-data">
+            <div class="info-row">
+              <ion-icon name="location"></ion-icon>
+              <span><strong>Ciudad:</strong> {{ solicitud.ciudad }}</span>
+            </div>
+            <div class="info-row">
+              <ion-icon name="business"></ion-icon>
+              <span><strong>Centro:</strong> {{ solicitud.centro }}</span>
+            </div>
+            <div class="info-row">
+              <ion-icon name="calendar"></ion-icon>
+              <span><strong>Solicitud:</strong> {{ formatearFecha(solicitud.fecha_solicitud) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="estado-info">
+          <div class="estado-descripcion">
+            <ion-icon [name]="getEstadoIcon(solicitud.estado)" [color]="getEstadoColor(solicitud.estado)"></ion-icon>
+            <p>{{ getEstadoDescripcion(solicitud.estado) }}</p>
+          </div>
+
+          <div class="progress-indicator">
+            <div class="progress-step" [class.active]="['Pendiente', 'En revision', 'Aprobado', 'Rechazado'].includes(solicitud.estado)">
+              <div class="step-circle">
+                <ion-icon name="document-text"></ion-icon>
+              </div>
+              <span>Enviada</span>
+            </div>
+
+            <div class="progress-line" [class.completed]="['En revision', 'Aprobado', 'Rechazado'].includes(solicitud.estado)"></div>
+
+            <div class="progress-step" [class.active]="['En revision', 'Aprobado', 'Rechazado'].includes(solicitud.estado)">
+              <div class="step-circle">
+                <ion-icon name="eye"></ion-icon>
+              </div>
+              <span>En Revisión</span>
+            </div>
+
+            <div class="progress-line" [class.completed]="solicitud.estado === 'Aprobado'"></div>
+
+            <div class="progress-step" [class.active]="solicitud.estado === 'Aprobado'" [class.rejected]="solicitud.estado === 'Rechazado'">
+              <div class="step-circle">
+                <ion-icon [name]="solicitud.estado === 'Aprobado' ? 'checkmark' : solicitud.estado === 'Rechazado' ? 'close' : 'heart'"></ion-icon>
+              </div>
+              <span>{{ solicitud.estado === 'Rechazado' ? 'Rechazada' : 'Aprobada' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="solicitud.observaciones" class="observaciones">
+          <h4>
+            <ion-icon name="chatbubble-ellipses"></ion-icon>
+            Observaciones:
+          </h4>
+          <p>{{ solicitud.observaciones }}</p>
+        </div>
+
+        <div class="actions" *ngIf="solicitud.estado === 'Aprobado'">
+          <ion-button expand="block" color="success" disabled>
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            ¡Adopción Aprobada!
+          </ion-button>
+          <p class="contact-info">
+            <ion-icon name="information-circle"></ion-icon>
+            Pronto recibirás instrucciones para completar el proceso de adopción.
+          </p>
+        </div>
+
+        <div class="actions" *ngIf="solicitud.estado === 'Rechazado'">
+          <ion-button expand="block" (click)="irAMascotas()" fill="outline">
+            <ion-icon name="paw" slot="start"></ion-icon>
+            Explorar Más Mascotas
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="!cargando && solicitudes.length === 0" class="no-data-message ion-text-center ion-padding">
+    <ion-icon name="document-text" size="large"></ion-icon>
+    <h2>No tienes solicitudes</h2>
+    <p>Aún no has solicitado la adopción de ninguna mascota</p>
+
+    <div class="cta-buttons">
+      <ion-button (click)="irAMascotas()" expand="block" size="large">
+        <ion-icon name="paw" slot="start"></ion-icon>
+        Explorar Mascotas
+      </ion-button>
+
+    </div>
+  </div>
+
+  <div class="info-footer ion-padding" *ngIf="solicitudes.length > 0">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="information-circle"></ion-icon>
+          Información Importante
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ul>
+          <li><strong>Tiempo de respuesta:</strong> Las solicitudes son revisadas en un plazo de 3-5 días hábiles.</li>
+          <li><strong>Proceso de adopción:</strong> Si tu solicitud es aprobada, te contactaremos para coordinar la entrega.</li>
+          <li><strong>Documentación:</strong> Necesitarás presentar cédula y comprobante de domicilio.</li>
+          <li><strong>Seguimiento:</strong> Realizamos seguimiento post-adopción para asegurar el bienestar de la mascota.</li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

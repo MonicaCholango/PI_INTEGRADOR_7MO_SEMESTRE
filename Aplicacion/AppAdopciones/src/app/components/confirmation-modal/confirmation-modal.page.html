@@ -1,0 +1,85 @@
+<ion-modal 
+  [isOpen]="isOpen" 
+  [cssClass]="modalClasses"
+  (willDismiss)="handleDismiss()"
+  [backdropDismiss]="false">
+  
+  <ng-template>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="header-icon" *ngIf="data.icon">
+          <ion-icon 
+            [name]="data.icon" 
+            [color]="data.iconColor"
+            size="large">
+          </ion-icon>
+        </div>
+        
+        <h2 class="modal-title">{{ data.title }}</h2>
+        
+        <ion-button 
+          fill="clear" 
+          size="small"
+          class="close-button"
+          (click)="handleDismiss()">
+          <ion-icon name="close" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="modal-body">
+        <div class="message-content">
+          <p [innerHTML]="data.message"></p>
+        </div>
+
+        <div class="input-section" *ngIf="data.showInput">
+          <ion-item class="input-item">
+            <ion-label position="stacked">
+              {{ data.inputPlaceholder }}
+              <span class="required-indicator" *ngIf="data.required">*</span>
+            </ion-label>
+            <ion-input
+              [(ngModel)]="inputValue"
+              [type]="data.inputType"
+              [placeholder]="data.inputPlaceholder"
+              [required]="data.required"
+              class="confirmation-input">
+            </ion-input>
+          </ion-item>
+          
+          <div class="validation-message" *ngIf="data.required && !inputValue.trim()">
+            <ion-icon name="alert-circle" color="danger"></ion-icon>
+            <small>Este campo es requerido</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="action-buttons">
+          <ion-button 
+            fill="outline"
+            color="medium"
+            expand="block"
+            (click)="handleCancel()"
+            class="cancel-button">
+            <ion-icon name="close" slot="start"></ion-icon>
+            {{ data.cancelText }}
+          </ion-button>
+
+
+          <ion-button 
+            [color]="data.confirmColor"
+            expand="block"
+            [disabled]="!canConfirm"
+            (click)="handleConfirm()"
+            class="confirm-button">
+            <ion-icon 
+              [name]="getConfirmIcon()" 
+              slot="start">
+            </ion-icon>
+            {{ data.confirmText }}
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

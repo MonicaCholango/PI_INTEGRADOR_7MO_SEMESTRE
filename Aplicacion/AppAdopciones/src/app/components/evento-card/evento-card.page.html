@@ -1,0 +1,117 @@
+<ion-card
+  class="evento-card"
+  [class.evento-card-compact]="compact"
+  [class.evento-card-disabled]="disabled"
+  [button]="!disabled"
+  (click)="handleViewDetails()">
+
+  <!-- Imagen del evento -->
+  <div class="evento-image-container">
+    <img
+      [src]="getImageUrl(evento.foto)"
+      [alt]="evento.titulo"
+      class="evento-image"
+      (error)="handleImageError($event)"
+      loading="lazy">
+
+    <!-- Badge de tipo -->
+    <div class="tipo-badge" [class]="'tipo-' + (evento.tipo_evento || '').toLowerCase()">
+      <ion-icon [name]="tipoIcon"></ion-icon>
+    </div>
+
+    <!-- Badge de estado vigencia -->
+    <div class="estado-badge" [class]="'estado-' + (evento.estado_vigencia || '').toLowerCase()">
+      <span>{{ getEstadoTexto() }}</span>
+    </div>
+
+    <!-- Badge destacado -->
+    <div class="destacado-badge" *ngIf="evento.destacado">
+      <ion-icon name="star" color="warning"></ion-icon>
+    </div>
+  </div>
+
+  <!-- Información resumida del evento -->
+  <ion-card-content class="evento-info">
+    
+    <!-- Título -->
+    <h3 class="evento-titulo">{{ evento.titulo }}</h3>
+
+    <!-- Información esencial - Solo foto, título, dirección, fecha -->
+    <div class="evento-detalles-resumidos">
+      
+      <!-- Fecha del evento -->
+      <div class="detalle-item" *ngIf="evento.fecha_evento">
+        <ion-icon name="calendar-outline" color="primary"></ion-icon>
+        <span>{{ formatearFecha(evento.fecha_evento) }}</span>
+      </div>
+
+      <!-- Dirección -->
+      <div class="detalle-item" *ngIf="evento.direccion">
+        <ion-icon name="location-outline" color="secondary"></ion-icon>
+        <span>{{ evento.direccion }}</span>
+      </div>
+
+      <!-- Ciudad -->
+      <div class="detalle-item" *ngIf="evento.ciudad_nombre">
+        <ion-icon name="business-outline" color="medium"></ion-icon>
+        <span>{{ evento.ciudad_nombre }}</span>
+      </div>
+
+    </div>
+  </ion-card-content>
+
+  <!-- Acciones de la tarjeta -->
+  <div class="evento-actions" *ngIf="!disabled">
+    
+    <!-- Botón ver detalles - siempre visible -->
+    <ion-button
+      fill="clear"
+      size="small"
+      (click)="$event.stopPropagation(); handleViewDetails()"
+      class="action-button details-button">
+      <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+      Ver Detalles
+    </ion-button>
+
+    <!-- Botón inscribirse - solo si es necesario -->
+    <ion-button
+      *ngIf="showRegisterButton && canRegister"
+      color="primary"
+      size="small"
+      (click)="$event.stopPropagation(); handleRegister()"
+      class="action-button register-button">
+      <ion-icon name="person-add-outline" slot="start"></ion-icon>
+      Inscribirse
+    </ion-button>
+
+    <!-- Acciones de admin -->
+    <div class="admin-actions" *ngIf="showEditButton || showDeleteButton">
+      <ion-button
+        *ngIf="showEditButton"
+        fill="outline"
+        color="primary"
+        size="small"
+        (click)="$event.stopPropagation(); handleEdit()"
+        class="action-button edit-button">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Editar
+      </ion-button>
+
+      <ion-button
+        *ngIf="showDeleteButton"
+        fill="outline"
+        color="danger"
+        size="small"
+        (click)="$event.stopPropagation(); handleDelete()"
+        class="action-button delete-button">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Eliminar
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" *ngIf="disabled">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-card>

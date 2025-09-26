@@ -1,0 +1,349 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ editar ? 'Editar Evento' : 'Nuevo Evento' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" fill="clear">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="evento-modal-content">
+  <form (ngSubmit)="guardar()" #eventoForm="ngForm">
+    
+    <!-- Información básica -->
+    <div class="form-section">
+      <h2>
+        <ion-icon name="information-circle" color="primary"></ion-icon>
+        Información Básica
+      </h2>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Título del Evento <span class="required">*</span></ion-label>
+        <ion-input 
+          [(ngModel)]="evento.titulo" 
+          name="titulo" 
+          required
+          placeholder="Ingresa el nombre del evento"
+          maxlength="100"
+          counter="true">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Descripción <span class="required">*</span></ion-label>
+        <ion-textarea 
+          [(ngModel)]="evento.descripcion" 
+          name="descripcion" 
+          rows="4" 
+          required
+          placeholder="Describe el evento..."
+          maxlength="500"
+          counter="true">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Tipo de Evento</ion-label>
+        <ion-select 
+          [(ngModel)]="evento.tipo_evento" 
+          name="tipo_evento"
+          placeholder="Selecciona el tipo"
+          interface="action-sheet">
+          <ion-select-option value="Evento">
+            <ion-icon name="calendar" slot="start"></ion-icon>
+            Evento
+          </ion-select-option>
+          <ion-select-option value="Campaña">
+            <ion-icon name="megaphone" slot="start"></ion-icon>
+            Campaña
+          </ion-select-option>
+          <ion-select-option value="Noticia">
+            <ion-icon name="newspaper" slot="start"></ion-icon>
+            Noticia
+          </ion-select-option>
+          <ion-select-option value="Adopción">
+            <ion-icon name="heart" slot="start"></ion-icon>
+            Feria de Adopción
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Fechas -->
+    <div class="form-section">
+      <h2>
+        <ion-icon name="calendar" color="primary"></ion-icon>
+        Fechas y Vigencia
+      </h2>
+
+      <ion-item class="form-item" button="true" (click)="abrirDatePicker('fecha_evento')">
+        <ion-label position="stacked">Fecha del Evento <span class="required">*</span></ion-label>
+        <ion-input 
+          [value]="formatearFechaParaMostrar(evento.fecha_evento)" 
+          readonly="true"
+          placeholder="Selecciona la fecha del evento">
+        </ion-input>
+        <ion-icon name="calendar-outline" slot="end" color="primary"></ion-icon>
+      </ion-item>
+
+      <ion-item class="form-item" button="true" (click)="abrirDatePicker('fecha_fin_evento')">
+        <ion-label position="stacked">Fecha de Finalización (Opcional)</ion-label>
+        <ion-input 
+          [value]="formatearFechaParaMostrar(evento.fecha_fin_evento)" 
+          readonly="true"
+          placeholder="Selecciona fecha de fin (opcional)">
+        </ion-input>
+        <ion-icon name="calendar-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+
+      <ion-item class="form-item" button="true" (click)="abrirDatePicker('fecha_fin_vigencia')">
+        <ion-label position="stacked">Vigente Hasta <span class="required">*</span></ion-label>
+        <ion-input 
+          [value]="formatearFechaParaMostrar(evento.fecha_fin_vigencia)" 
+          readonly="true"
+          placeholder="Selecciona hasta cuándo estará vigente">
+        </ion-input>
+        <ion-icon name="time-outline" slot="end" color="warning"></ion-icon>
+      </ion-item>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="form-section">
+      <h2>
+        <ion-icon name="location" color="primary"></ion-icon>
+        Ubicación
+      </h2>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Dirección</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.direccion" 
+          name="direccion" 
+          placeholder="Ej. Centro Cultural, Av. Principal #123">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Ciudad</ion-label>
+        <ion-select 
+          [(ngModel)]="evento.ciudad_id" 
+          name="ciudad_id"
+          placeholder="Selecciona la ciudad"
+          interface="popover">
+          <ion-select-option *ngFor="let ciudad of data.ciudades" [value]="ciudad.id">
+            {{ ciudad.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Centro Organizador</ion-label>
+        <ion-select 
+          [(ngModel)]="evento.centro_id" 
+          name="centro_id"
+          placeholder="Selecciona el centro"
+          interface="popover">
+          <ion-select-option *ngFor="let centro of data.centros" [value]="centro.id">
+            {{ centro.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Contacto -->
+    <div class="form-section">
+      <h2>
+        <ion-icon name="call" color="primary"></ion-icon>
+        Información de Contacto
+      </h2>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Teléfono de Contacto</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.contacto_telefono" 
+          name="contacto_telefono" 
+          type="tel" 
+          placeholder="0999123456">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Email de Contacto</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.contacto_email" 
+          name="contacto_email" 
+          type="email" 
+          placeholder="contacto@pae.ec">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">URL Externa</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.url_externa" 
+          name="url_externa" 
+          placeholder="https://ejemplo.com">
+        </ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Configuración -->
+    <div class="form-section">
+      <h2>
+        <ion-icon name="settings" color="primary"></ion-icon>
+        Configuración del Evento
+      </h2>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Cupo Máximo (opcional)</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.cupo_maximo" 
+          name="cupo_maximo" 
+          type="number" 
+          min="1" 
+          placeholder="Dejar vacío si no hay límite">
+        </ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-label position="stacked">Etiquetas</ion-label>
+        <ion-input 
+          [(ngModel)]="evento.tags" 
+          name="tags" 
+          placeholder="rescate, adopción, campaña (separadas por comas)">
+        </ion-input>
+      </ion-item>
+
+      <div class="checkbox-section">
+        <ion-item class="checkbox-item">
+          <ion-checkbox 
+            [(ngModel)]="evento.requiere_registro" 
+            name="requiere_registro">
+          </ion-checkbox>
+          <ion-label class="ion-margin-start">
+            <h3>Requiere inscripción previa</h3>
+            <p>Los usuarios deberán inscribirse antes del evento</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item class="checkbox-item">
+          <ion-checkbox 
+            [(ngModel)]="evento.destacado" 
+            name="destacado">
+          </ion-checkbox>
+          <ion-label class="ion-margin-start">
+            <h3>Evento destacado</h3>
+            <p>Aparecerá en la sección de eventos destacados</p>
+          </ion-label>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- Foto del evento -->
+    <div class="form-section photo-section">
+      <h2>
+        <ion-icon name="camera" color="primary"></ion-icon>
+        Foto del Evento
+      </h2>
+
+      <div class="photo-upload-area">
+        <div class="photo-preview" *ngIf="preview">
+          <img [src]="preview" alt="Preview del evento">
+          <ion-button 
+            fill="clear" 
+            color="danger" 
+            class="remove-photo-btn"
+            (click)="removerFoto()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <ion-button 
+          expand="block" 
+          fill="outline" 
+          (click)="tomarFoto()" 
+          [disabled]="cargando"
+          class="photo-button">
+          <ion-icon name="camera" slot="start"></ion-icon>
+          {{ preview ? 'Cambiar Foto' : 'Seleccionar Foto' }}
+        </ion-button>
+
+        <p class="photo-note" *ngIf="preview">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          Foto lista para subir
+        </p>
+      </div>
+    </div>
+
+  </form>
+</ion-content>
+
+<ion-footer class="modal-footer">
+  <ion-toolbar>
+    <div class="footer-buttons">
+      <ion-button 
+        fill="clear" 
+        color="medium" 
+        (click)="cerrar()"
+        class="cancel-button">
+        Cancelar
+      </ion-button>
+      
+      <ion-button 
+        expand="block"
+        color="primary" 
+        (click)="guardar()" 
+        [disabled]="!puedeGuardar() || cargando"
+        class="save-button">
+        <ion-spinner name="crescent" *ngIf="cargando" slot="start"></ion-spinner>
+        <ion-icon name="save" slot="start" *ngIf="!cargando"></ion-icon>
+        {{ editar ? 'Actualizar' : 'Crear' }} Evento
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+
+<!-- Modal para selección de fecha -->
+<ion-modal 
+  [isOpen]="mostrarDatePicker" 
+  (didDismiss)="cerrarDatePicker()"
+  class="date-picker-modal">
+  <ng-template>
+    <div class="date-picker-content">
+      <div class="date-picker-header">
+        <h3>{{ getTituloDatePicker() }}</h3>
+        <ion-button fill="clear" (click)="cerrarDatePicker()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <ion-datetime
+        [(ngModel)]="fechaTemporal"
+        presentation="date-time"
+        [preferWheel]="true"
+        [showDefaultButtons]="true"
+        [cancelText]="'Cancelar'"
+        [doneText]="'Confirmar'"
+        (ionChange)="onFechaSeleccionada($event)"
+        class="date-picker-calendar">
+      </ion-datetime>
+
+      <div class="date-picker-buttons">
+        <ion-button 
+          fill="clear" 
+          color="medium" 
+          (click)="cerrarDatePicker()">
+          Cancelar
+        </ion-button>
+        <ion-button 
+          fill="solid" 
+          color="primary" 
+          (click)="confirmarFecha()">
+          Confirmar
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

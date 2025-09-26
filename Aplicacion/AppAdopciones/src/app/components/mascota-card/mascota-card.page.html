@@ -1,0 +1,172 @@
+
+<ion-card
+  class="mascota-card"
+  [class.mascota-card-compact]="compact"
+  [class.mascota-card-disabled]="disabled"
+  [button]="!disabled"
+  (click)="handleViewDetails()">
+
+  <div class="mascota-image-container">
+    <img
+      [src]="mascota.foto | photo"
+      [alt]="mascota.nombre"
+      class="mascota-image"
+      [class.mascota-image-compact]="compact"
+      (error)="handleImageError($event)"
+      loading="lazy">
+
+    <div class="estado-badge" [class]="'estado-' + (mascota.estado || '').toLowerCase().replace(' ', '-')">
+      <ion-icon [name]="statusIcon"></ion-icon>
+      <span>{{ mascota.estado }}</span>
+    </div>
+
+    <div class="genero-badge" *ngIf="!compact && mascota.genero">
+      <ion-icon [name]="genderIcon" [color]="mascota.genero === 'Macho' ? 'primary' : 'secondary'"></ion-icon>
+    </div>
+  </div>
+
+  <ion-card-content class="mascota-info" [class.mascota-info-compact]="compact">
+    <div class="mascota-header">
+      <h3 class="mascota-nombre">{{ mascota.nombre }}</h3>
+      <ion-chip
+        [color]="mascota.estado | estadoColor:'mascota'"
+        size="small"
+        class="estado-chip">
+        <ion-icon [name]="statusIcon"></ion-icon>
+        <ion-label>{{ mascota.estado }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <div class="mascota-detalles-basicos">
+      <div class="detalle-item">
+        <ion-icon name="paw" color="primary"></ion-icon>
+        <span>{{ mascota.tipoMascota }}</span>
+      </div>
+
+      <div class="detalle-item" *ngIf="mascota.edad">
+        <ion-icon name="time" color="secondary"></ion-icon>
+        <span>{{ mascota.edad }}</span>
+      </div>
+
+      <div class="detalle-item" *ngIf="mascota.genero && !compact">
+        <ion-icon [name]="genderIcon" [color]="mascota.genero === 'Macho' ? 'primary' : 'secondary'"></ion-icon>
+        <span>{{ mascota.genero }}</span>
+      </div>
+    </div>
+
+    <div class="mascota-ubicacion" *ngIf="!compact">
+      <div class="detalle-item" *ngIf="mascota.ciudad">
+        <ion-icon name="location" color="medium"></ion-icon>
+        <span>{{ mascota.ciudad }}</span>
+      </div>
+
+      <div class="detalle-item" *ngIf="mascota.centro">
+        <ion-icon name="business" color="medium"></ion-icon>
+        <span>{{ mascota.centro }}</span>
+      </div>
+    </div>
+
+    <div class="mascota-salud" *ngIf="!compact && mascota.salud">
+      <ion-chip color="success" size="small" *ngIf="mascota.salud === 'Esterilizado'">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <ion-label>Esterilizado</ion-label>
+      </ion-chip>
+
+      <ion-chip color="warning" size="small" *ngIf="mascota.vacunas_al_dia">
+        <ion-icon name="shield-checkmark"></ion-icon>
+        <ion-label>Vacunas al día</ion-label>
+      </ion-chip>
+    </div>
+
+    <div class="mascota-personalidad" *ngIf="!compact && personalityChips.length > 0">
+      <ion-chip
+        color="light"
+        size="small"
+        *ngFor="let trait of personalityChips">
+        <ion-label>{{ trait }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <div class="mascota-descripcion" *ngIf="!compact && mascota.observaciones">
+      <p>{{ mascota.observaciones | truncate:(compact ? 60 : 120) }}</p>
+    </div>
+
+    <div class="mascota-fechas" *ngIf="!compact">
+      <div class="fecha-item" *ngIf="mascota.fecha_ingreso">
+        <ion-icon name="calendar" color="medium"></ion-icon>
+        <small>Ingreso: {{ mascota.fecha_ingreso | dateFormat:'short' }}</small>
+      </div>
+
+      <div class="fecha-item" *ngIf="mascota.responsable">
+        <ion-icon name="person" color="medium"></ion-icon>
+        <small>Responsable: {{ mascota.responsable }}</small>
+      </div>
+    </div>
+
+    <div class="mascota-ubicacion-compacta" *ngIf="compact && mascota.ciudad">
+      <ion-icon name="location" color="medium"></ion-icon>
+      <span>{{ mascota.ciudad }}</span>
+    </div>
+  </ion-card-content>
+
+  <div class="mascota-actions" *ngIf="!disabled">
+    <ion-button
+      *ngIf="showDetailsButton"
+      fill="clear"
+      size="small"
+      (click)="$event.stopPropagation(); handleViewDetails()"
+      class="action-button details-button">
+      <ion-icon name="information-circle" slot="start"></ion-icon>
+      {{ compact ? 'Detalles' : 'Ver Detalles' }}
+    </ion-button>
+
+    <ion-button
+      *ngIf="showAdoptButton && isAvailable"
+      [color]="isAvailable ? 'primary' : 'medium'"
+      [disabled]="!isAvailable"
+      size="small"
+      (click)="$event.stopPropagation(); handleAdopt()"
+      class="action-button adopt-button">
+      <ion-icon name="heart" slot="start"></ion-icon>
+      {{ compact ? 'Adoptar' : 'Solicitar Adopción' }}
+    </ion-button>
+
+    <ion-button
+      *ngIf="showAdoptButton && !isAvailable"
+      color="medium"
+      disabled
+      size="small"
+      class="action-button disabled-button">
+      <ion-icon name="ban" slot="start"></ion-icon>
+      No Disponible
+    </ion-button>
+
+    <div class="admin-actions" *ngIf="showEditButton || showDeleteButton">
+      <ion-button
+        *ngIf="showEditButton"
+        fill="outline"
+        color="primary"
+        size="small"
+        (click)="$event.stopPropagation(); handleEdit()"
+        class="action-button edit-button">
+        <ion-icon name="create" slot="start"></ion-icon>
+        Editar
+      </ion-button>
+
+      <ion-button
+        *ngIf="showDeleteButton"
+        fill="outline"
+        color="danger"
+        size="small"
+        (click)="$event.stopPropagation(); handleDelete()"
+        class="action-button delete-button">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        Eliminar
+      </ion-button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" *ngIf="disabled">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-card>

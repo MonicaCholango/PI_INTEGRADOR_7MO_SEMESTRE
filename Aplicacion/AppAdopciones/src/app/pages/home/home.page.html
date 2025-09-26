@@ -1,0 +1,242 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <div class="hero-section">
+    <div class="hero-content">
+      <ion-icon name="paw" size="large"></ion-icon>
+      <h1>Bienvenido{{ usuario ? ' ' + usuario?.nombres : '' }} a PAE</h1>
+      <p>Protección Animal Ecuador - Rescatando vidas, creando familias</p>
+    </div>
+  </div>
+
+  <div class="info-section ion-padding">
+    <h2>¿Qué es PAE?</h2>
+    <p>
+      Protección Animal Ecuador es una organización dedicada al rescate,
+      rehabilitación y adopción de animales en situación de vulnerabilidad.
+      Trabajamos incansablemente para brindar una segunda oportunidad a
+      mascotas que han sido abandonadas o maltratadas.
+    </p>
+
+    <h3>Nuestra Misión</h3>
+    <p>
+      Promover el bienestar animal a través de programas de adopción responsable,
+      educación y concientización sobre el cuidado de mascotas en todo el Ecuador.
+    </p>
+
+    <h3>¿Cómo puedes ayudar?</h3>
+    <p>
+      Únete a nuestra causa adoptando una mascota, donando para su cuidado,
+      o participando como voluntario en nuestras campañas de rescate y rehabilitación.
+    </p>
+  </div>
+
+  <!-- SERVICIOS PRINCIPALES - MODIFICADOS -->
+  <div class="services-section ion-padding">
+    <h2>Nuestros Servicios</h2>
+    <ion-grid>
+      <ion-row>
+        
+        <!-- DONACIONES -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="service-card" (click)="abrirModalDonaciones()">
+            <ion-card-header>
+              <ion-icon name="heart" color="danger" size="large"></ion-icon>
+              <ion-card-title>Donaciones</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Ayúdanos a seguir rescatando mascotas y brindándoles el cuidado que merecen
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- EVENTOS Y NOTICIAS -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="service-card" (click)="irAEventos()">
+            <ion-card-header>
+              <ion-icon name="calendar" color="primary" size="large"></ion-icon>
+              <ion-card-title>Eventos y Noticias</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Mantente informado sobre nuestros eventos, campañas y noticias más recientes
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- RESULTADOS DE LABORATORIO -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="service-card" (click)="abrirEnlace('https://fundacion-pae.web.app/')">
+            <ion-card-header>
+              <ion-icon name="document-text" color="primary" size="large"></ion-icon>
+              <ion-card-title>Resultados de Laboratorio</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Consulta resultados médicos de tu mascota
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- VER MASCOTAS -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="service-card" (click)="irAMascotas()">
+            <ion-card-header>
+              <ion-icon name="paw" color="success" size="large"></ion-icon>
+              <ion-card-title>Ver Mascotas</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Encuentra tu compañero ideal entre nuestras mascotas en adopción
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- DENUNCIAR -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="service-card" (click)="irADenuncias()">
+            <ion-card-header>
+              <ion-icon name="shield-half" color="danger" size="large"></ion-icon>
+              <ion-card-title>Denunciar Maltrato</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Reporta casos de maltrato animal y sé parte del cambio
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- ESTADÍSTICAS DE IMPACTO -->
+  <div class="stats-section ion-padding">
+    <h2>Nuestro Impacto</h2>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="3">
+          <div class="stat-item">
+            <ion-icon name="heart" color="danger"></ion-icon>
+            <h3>500+</h3>
+            <p>Mascotas Rescatadas</p>
+          </div>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <div class="stat-item">
+            <ion-icon name="home" color="primary"></ion-icon>
+            <h3>350+</h3>
+            <p>Adopciones Exitosas</p>
+          </div>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <div class="stat-item">
+            <ion-icon name="people" color="secondary"></ion-icon>
+            <h3>1200+</h3>
+            <p>Familias Felices</p>
+          </div>
+        </ion-col>
+        <ion-col size="6" size-md="3">
+          <div class="stat-item">
+            <ion-icon name="location" color="tertiary"></ion-icon>
+            <h3>3</h3>
+            <p>Centros Activos</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- MODAL DE DONACIONES -->
+  <ion-modal [isOpen]="mostrarModalDonaciones" (didDismiss)="cerrarModalDonaciones()">
+    <ng-template>
+      <div class="donaciones-modal">
+        
+        <div class="modal-header">
+          <h2>
+            <ion-icon name="heart" color="danger"></ion-icon>
+            Donaciones para PAE
+          </h2>
+          <ion-button fill="clear" (click)="cerrarModalDonaciones()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="modal-content">
+          <div class="donacion-info">
+            <p class="descripcion">
+              Tu donación nos ayuda a rescatar, rehabilitar y encontrar hogares para mascotas en situación de vulnerabilidad. 
+              Cada aporte, por pequeño que sea, hace la diferencia en la vida de un animal.
+            </p>
+
+            <div class="metodos-donacion">
+              <h3>
+                <ion-icon name="card" color="primary"></ion-icon>
+                Métodos de Donación
+              </h3>
+
+              <!-- Donación por PayPal -->
+              <div class="metodo-item">
+                <div class="metodo-header">
+                  <ion-icon name="logo-paypal" color="primary"></ion-icon>
+                  <span>Donación en línea con PayPal</span>
+                </div>
+                <p>Forma rápida y segura de donar desde cualquier lugar del mundo</p>
+                <ion-button 
+                  (click)="abrirEnlace(paypalUrl)" 
+                  expand="block" 
+                  color="primary"
+                  class="donate-button">
+                  <ion-icon name="card" slot="start"></ion-icon>
+                  Donar con PayPal
+                </ion-button>
+              </div>
+
+              <!-- Transferencia Bancaria -->
+              <div class="metodo-item">
+                <div class="metodo-header">
+                  <ion-icon name="business" color="secondary"></ion-icon>
+                  <span>Transferencia Bancaria</span>
+                </div>
+                <div class="datos-bancarios">
+                  <div class="dato-item">
+                    <strong>Banco:</strong> Banco Pichincha
+                  </div>
+                  <div class="dato-item">
+                    <strong>Cuenta:</strong> 1234567890
+                  </div>
+                  <div class="dato-item">
+                    <strong>Tipo:</strong> Cuenta Corriente
+                  </div>
+                  <div class="dato-item">
+                    <strong>Beneficiario:</strong> Protección Animal Ecuador
+                  </div>
+                  <div class="dato-item">
+                    <strong>RUC:</strong> 1792345678001
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="info-adicional">
+              <h4>
+                <ion-icon name="information-circle" color="tertiary"></ion-icon>
+                ¿En qué usamos las donaciones?
+              </h4>
+              <ul>
+                <li>Atención veterinaria y medicamentos</li>
+                <li>Alimentación para mascotas rescatadas</li>
+                <li>Mantenimiento de refugios</li>
+                <li>Campañas de esterilización</li>
+                <li>Equipos y suministros médicos</li>
+              </ul>
+            </div>
+
+            <div class="agradecimiento">
+              <ion-icon name="heart" color="danger"></ion-icon>
+              <p><strong>¡Gracias por tu solidaridad!</strong><br>
+              Cada donación salva vidas y crea familias felices.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
