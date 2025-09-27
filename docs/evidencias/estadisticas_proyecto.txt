@@ -1,0 +1,35 @@
+=== ESTADÍSTICAS DEL PROYECTO INTEGRADOR PAE ===
+Generado el: vie., 26 de sep. de 2025 09:49:37 p. m.
+
+1. INFORMACIÓN DEL REPOSITORIO:
+Nombre: PI_INTEGRADOR_7MO_SEMESTRE
+Rama actual: main
+Último commit: d28f4d9 - docs: actualizar changelog y release notes v1.1.0 (Monica Cholango, 2025-09-26)
+
+2. ESTADÍSTICAS DE COMMITS:
+Total de commits: 8
+Commits por autor:
+     8	Monica Cholango
+
+3. TAGS Y RELEASES:
+Tags creados:
+v1.0.0
+v1.1.0
+
+4. RAMAS:
+Ramas locales:
+  feat/guia-contribucion-101
+* main
+
+5. ARCHIVOS DEL PROYECTO:
+Estructura principal:
+
+6. COMMITS RECIENTES (últimos 10):
+d28f4d9 docs: actualizar changelog y release notes v1.1.0
+d82e90a Merge pull request #1 from MonicaCholango/feat/guia-contribucion-101
+79dddbd feat(docs): agregar seccion contribucion y tabla versiones #101
+35ad750 docs: agregar guia de contribucion detallada #101
+f3eefec chore: preparar baseline v1.0.0
+02e8589 Subida inicial del proyecto PI_INTEGRADOR_7MO_SEMESTRE
+a8c29ac Subida inicial del proyecto PI_INTEGRADOR_7MO_SEMESTRE
+8ffd1f2 Initial commit
