@@ -7,9 +7,9 @@
 **Versión:** 1.1.0  
 **Periodo:** Julio - Septiembre 2025  
 **Equipo:**
-- Monica Cholango Collaguazo - Líder de Proyecto, Backend y Frontend
-- Byron Torres - Desarrollador Backend 
-- Jose Arevalo - Desarrollador Frontend
+- Monica Cholango Collaguazo - Coordinador de Proyecto, Backend y Frontend
+- Byron Torres - Desarrollador Backend y Frontend 
+- Jose Arevalo - Desarrollador Backend y Frontend
 
 ### 2. Arquitectura del Sistema
 
